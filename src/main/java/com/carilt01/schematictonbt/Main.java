@@ -12,31 +12,22 @@ public class Main {
         System.out.println("Hello and welcome buddy!");
 
         String inputFile = null;
-        String outputFile = null;
 
         for (int i = 0; i < args.length; i++) {
-            switch (args[i]) {
-                case "--inputFile":
-                    if (i + 1 < args.length) {
-                        inputFile = args[i + 1];
-                        i++; // skip the value
-                    }
-                    break;
-                case "--outputFile":
-                    if (i + 1 < args.length) {
-                        outputFile = args[i + 1];
-                        i++;
-                    }
-                    break;
-                default:
-                    System.out.println("Unknown argument: " + args[i]);
+            if (args[i].equals("--inputFile")) {
+                if (i + 1 < args.length) {
+                    inputFile = args[i + 1];
+                    i++; // skip the value
+                }
+            } else {
+                System.out.println("Unknown argument: " + args[i]);
             }
         }
 
 
 
-        if (inputFile == null || outputFile == null) {
-            System.out.println("No input file or output file specified!");
+        if (inputFile == null) {
+            System.out.println("No input file specified!");
             return;
         }
 
