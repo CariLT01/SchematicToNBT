@@ -1,6 +1,8 @@
 package com.carilt01.schematictonbt;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import net.kyori.adventure.nbt.*;
 
@@ -10,18 +12,13 @@ import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.*;
 
-class BlockEntry {
-    int type;
-    int meta;
-    String name;
-    String text_type; // optional if you need it
-}
+
 
 
 public class SchematicToSchem {
 
-    private List<BlockEntry> blockTypes;
-    private Map<Long, BlockEntry> mappedBlockTypes = new HashMap<>();
+    private List<String> blockTypes;
+    private Map<String, String> mappedBlockTypes = new HashMap<>();
 
     public SchematicToSchem() {
 
@@ -34,13 +31,16 @@ public class SchematicToSchem {
         Gson gson = new Gson();
 
         try (FileReader fileReader = new FileReader("blocks.json")) {
-            Type listType = new TypeToken<List<BlockEntry>>(){}.getType();
-            List<BlockEntry> blocks = gson.fromJson(fileReader, listType);
+            // Parse the top-level object
+            JsonObject root = gson.fromJson(fileReader, JsonObject.class);
+            JsonObject blocks = root.getAsJsonObject("blocks");
 
-            for (BlockEntry b : blocks) {
-                long uniqueId = ((long) b.type << 32) | (b.meta & 0xFFFFFFFFL);
+            for (Map.Entry<String, JsonElement> entry : blocks.entrySet()) {
+                String key = entry.getKey(); // "0:0"
+                String value = entry.getValue().getAsString(); // "minecraft:stone"
 
-                mappedBlockTypes.put(uniqueId, b);
+
+                mappedBlockTypes.put(key, value);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -86,15 +86,15 @@ public class SchematicToSchem {
                         byte blockData = blocksOriginal[index];
                         byte blockMetadata = metadataOriginal[index];
 
-                        long hash = ((long) (int) blockData << 32) | ((int) blockMetadata & 0xFFFFFFFFL);
 
-                        BlockEntry entry = this.mappedBlockTypes.get(hash);
 
+                        int unsignedBlockData = blockData & 0xFF;
+                        String entry = mappedBlockTypes.get(unsignedBlockData + ":" + blockMetadata);
                         String blockName = "";
                         if (entry != null) {
-                            blockName = "minecraft:" + entry.name.toLowerCase().replace(" ", "_");
+                            blockName = entry;
                         } else {
-                            System.out.println("Warn: failed to get block hash: " + hash);
+                            System.out.println("Warn: failed to get block hash: " + unsignedBlockData + ":" + blockMetadata);
                             blockName = "minecraft:stone";
                             blocksFailed++;
                         }
