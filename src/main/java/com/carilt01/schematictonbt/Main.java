@@ -1,5 +1,11 @@
 package com.carilt01.schematictonbt;
 
+import com.carilt01.schematictonbt.loaders.SchemFileLoader;
+import com.carilt01.schematictonbt.loaders.SchematicFileLoader;
+
+import java.io.File;
+import java.io.IOException;
+
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
@@ -24,25 +30,36 @@ public class Main {
             }
         }
 
-
+        // Debug purposes
+        inputFile = "input.schem";
 
         if (inputFile == null) {
             System.out.println("No input file specified!");
             return;
         }
 
-        if (inputFile.endsWith(".schematic")) {
-            System.out.println("Going through intermediary step of converting .schematic to .schem");
-            SchematicToSchem converter = new SchematicToSchem();
-            converter.convertFile(inputFile);
-        } else if (inputFile.endsWith(".schem")) {
-            System.out.println("Already in .schem format");
-        } else {
-            System.out.println("Invalid file extension");
+        Volume schematicVolume;
+
+        SchematicFileLoader schematicFileLoader = new SchematicFileLoader();
+        SchemFileLoader schemFileLoader = new SchemFileLoader();
+        NBTExporter nbtExporter = new NBTExporter();
+
+        try {
+            if (inputFile.endsWith(".schematic")) {
+                System.out.println("Loading using .schematic legacy loader");
+                schematicVolume = schematicFileLoader.loadSchematicToVolume(new File(inputFile));
+            } else if (inputFile.endsWith(".schem")) {
+                schematicVolume = schemFileLoader.loadSchemToVolume(new File(inputFile));
+            } else {
+                System.out.println("Invalid file extension");
+                return;
+            }
+
+            System.out.println("Converting to .nbt");
+            nbtExporter.exportNbt(schematicVolume, "output_v2.nbt");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
-        System.out.println("Converting to .nbt");
-        SchemToNBTStructure converter2 = new SchemToNBTStructure();
-        converter2.convert("output.schem");
     }
 }
