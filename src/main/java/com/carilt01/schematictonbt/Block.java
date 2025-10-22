@@ -79,7 +79,7 @@ public class Block {
         if (this == o) return true;
         if (!(o instanceof Block)) return false;
         if (!this.hashCached) this.rebuildHash();
-        if (o.hashCode() != this.cachedHash) return false;
+        //if (o.hashCode() != this.cachedHash) return false;
         Block other = (Block) o;
         return Objects.equals(blockName, other.blockName) &&
                 Objects.equals(this.propertiesTreemap, other.propertiesTreemap);

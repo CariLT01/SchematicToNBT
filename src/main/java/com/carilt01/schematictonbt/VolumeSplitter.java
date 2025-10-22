@@ -12,95 +12,66 @@ public class VolumeSplitter {
     }
 
     public List<Volume> splitVolume(Volume volume) throws IOException {
-
-        int initialXGuess = 2048;
-        int initialZGuess = 2048;
+        final int initialXGuess = 2048;
+        final int initialZGuess = 2048;
+        final int MAX_VOLUME_SIZE = 246 * 1024;
 
         int xStart = 0;
-        int xChunk = 0;
-        int zChunk = 0;
+        int yEnd = volume.getHeight();
 
         List<Volume> completedVolumes = new ArrayList<>();
 
-        int xSlices = (int) Math.ceil(volume.getHeight() / (double) initialXGuess);
-        int zSlices = (int) Math.ceil(volume.getLength() / (double) initialZGuess);
-
-        int xTotal = volume.getWidth();
-        int zTotal = volume.getLength();
-
-        int totalSlices = xSlices * zSlices;
-        int slicesDone = 0;
-        int totalNumBlocks = xTotal * zTotal * volume.getHeight();
-        int numBlocksRemaining = totalNumBlocks;
-
-        while (xStart < xTotal) {
+        while (xStart < volume.getWidth()) {
             int zStart = 0;
+
+            // Decide the X chunk for this entire column (do NOT change it per z-iteration)
+            int xChunkForColumn = Math.min(volume.getWidth() - xStart, initialXGuess);
+
             while (zStart < volume.getLength()) {
+                // Decide z chunk candidate for this row
+                int zChunkForRow = Math.min(volume.getLength() - zStart, initialZGuess);
 
-                xChunk = Math.min(volume.getWidth() - xStart, initialXGuess);
-                zChunk = Math.min(volume.getLength() - zStart, initialZGuess);
+                // Use local trial values so we don't overwrite the column chunk
+                int curXChunk = xChunkForColumn;
+                int curZChunk = zChunkForRow;
 
-                int xEnd;
-                int yEnd = volume.getHeight();
-                int zEnd;
+                int xEnd = 0;
+                int zEnd = 0;
 
+                // Reduce curXChunk/curZChunk until serialized size fits
                 while (true) {
+                    xEnd = Math.min(xStart + curXChunk, volume.getWidth());
+                    zEnd = Math.min(zStart + curZChunk, volume.getLength());
 
-                    xEnd = Math.min(xStart + xChunk, volume.getWidth());
-                    zEnd = Math.min(zStart + zChunk, volume.getLength());
-
-                    //System.out.println("Attempt to split at " + volume.getWidth() + ", " + yEnd + ", " + zEnd);
-                    //System.out.println("Start: 0 " + yStart + " " + zStart);
                     System.out.print("Getting size...");
-                    Volume areaVolume = volume.collectBlocksInArea(
-                            xStart, 0, zStart,
-                            xEnd, yEnd, zEnd
-
-                    );
+                    Volume areaVolume = volume.collectBlocksInArea(xStart, 0, zStart, xEnd, yEnd, zEnd);
                     System.out.print("\rSerializing and estimating size...");
                     byte[] nbtData = vms.serializeVolume(areaVolume);
 
                     int compressedSize = nbtData.length;
-                    int MAX_VOLUME_SIZE = 246 * 1024; // 10 kb for safety
                     if (compressedSize < MAX_VOLUME_SIZE) {
-                        //System.out.print("\rReached a size of: " + compressedSize);
+                        System.out.print("\rReached a size of: " + Math.round((float) compressedSize / 1024) + " KB");
                         break;
                     }
 
-                    xChunk = Math.max(1, xChunk / 2);
-                    zChunk = Math.max(1, zChunk / 2);
+                    // Shrink only the local trial sizes
+                    curXChunk = Math.max(1, curXChunk / 2);
+                    curZChunk = Math.max(1, curZChunk / 2);
                 }
 
-                // Export
-                Volume areaVolume = volume.collectBlocksInArea(
-                        xStart, 0, zStart,
-                        Math.min(xStart + xChunk, volume.getWidth()), volume.getHeight(),
-                        Math.min(zStart + zChunk, volume.getLength())
-                );
-
-                int numBlocksFilled = areaVolume.getWidth() * areaVolume.getHeight() * areaVolume.getLength();
-                numBlocksRemaining -= numBlocksFilled;
-
+                // Export using the final xEnd/zEnd determined above
+                Volume areaVolume = volume.collectBlocksInArea(xStart, 0, zStart, xEnd, yEnd, zEnd);
                 completedVolumes.add(areaVolume);
 
-                zStart += zChunk;
-
-                xEnd = Math.min(xStart + xChunk, volume.getWidth());
-                zEnd = Math.min(zStart + zChunk, volume.getLength());
-
-
-                slicesDone += 1;
-
-                // Compute percentage
-               // int percent = (int) ((slicesDone / (double) totalSlices) * 100);
-                System.out.println("Splitting volume: " + Math.round(((float) (totalNumBlocks - numBlocksRemaining) / totalNumBlocks) * 100) +  "% Steps done: " + (totalNumBlocks - numBlocksRemaining) + "/" + totalNumBlocks);
+                // Advance zStart by the final chunk used for this piece
+                zStart += Math.min(curZChunk, zEnd - zStart);
             }
 
-            xStart += xChunk;
+            // Advance xStart by the column chunk size (the one chosen once per x column)
+            xStart += xChunkForColumn;
         }
 
         return completedVolumes;
-
     }
 
 }

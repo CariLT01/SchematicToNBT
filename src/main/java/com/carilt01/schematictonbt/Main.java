@@ -32,7 +32,7 @@ public class Main {
         }
 
         // Debug purposes
-        inputFile = (inputFile == null) ? "input.schem" : inputFile;
+        inputFile = (inputFile == null) ? "xerneas.schem" : inputFile;
 
 
         Volume schematicVolume;
