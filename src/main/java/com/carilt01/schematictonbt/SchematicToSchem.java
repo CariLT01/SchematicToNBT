@@ -1,4 +1,4 @@
-package com.carilt01.schematictonbt;
+/*package com.carilt01.schematictonbt;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -196,4 +196,4 @@ public class SchematicToSchem {
 
     }
 
-}
+}*/
