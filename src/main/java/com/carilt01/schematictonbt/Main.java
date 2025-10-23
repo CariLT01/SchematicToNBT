@@ -5,16 +5,17 @@ import com.carilt01.schematictonbt.loaders.SchematicFileLoader;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
     public static void main(String[] args) {
+
+
+
         String workingDir = System.getProperty("user.dir");
         System.out.println("Working directory: " + workingDir);
 
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
+
         System.out.println("Hello and welcome buddy!");
 
         String inputFile = null;
@@ -31,18 +32,15 @@ public class Main {
         }
 
         // Debug purposes
-        inputFile = "input.schem";
+        inputFile = (inputFile == null) ? "235.schematic" : inputFile;
 
-        if (inputFile == null) {
-            System.out.println("No input file specified!");
-            return;
-        }
 
         Volume schematicVolume;
 
         SchematicFileLoader schematicFileLoader = new SchematicFileLoader();
         SchemFileLoader schemFileLoader = new SchemFileLoader();
         NBTExporter nbtExporter = new NBTExporter();
+        VolumeSplitter volumeSplitter = new VolumeSplitter();
 
         try {
             if (inputFile.endsWith(".schematic")) {
@@ -55,7 +53,16 @@ public class Main {
                 return;
             }
 
-            System.out.println("Converting to .nbt");
+            /*System.out.println("Splitting...");
+            List<Volume> splitVolumes = volumeSplitter.splitVolume(schematicVolume);
+
+            System.out.println("Exporting volumes...");
+            int counter = 0;
+            for (Volume vol : splitVolumes) {
+                nbtExporter.exportNbt(vol, "output_v2_schematic" + counter  + ".nbt");
+                counter++;
+            }*/
+
             nbtExporter.exportNbt(schematicVolume, "output_v2.nbt");
         } catch (IOException e) {
             e.printStackTrace();

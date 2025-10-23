@@ -2,7 +2,11 @@ package com.carilt01.schematictonbt.loaders;
 
 import com.carilt01.schematictonbt.Block;
 import com.carilt01.schematictonbt.Volume;
-import net.kyori.adventure.nbt.*;
+import net.querz.nbt.io.NBTUtil;
+import net.querz.nbt.io.NamedTag;
+import net.querz.nbt.tag.CompoundTag;
+import net.querz.nbt.tag.IntTag;
+import net.querz.nbt.tag.Tag;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,7 +20,9 @@ public class SchemFileLoader {
     }
 
     public Volume loadSchemToVolume(File file) throws IOException {
-        CompoundBinaryTag tag = BinaryTagIO.reader().read(file.toPath(), BinaryTagIO.Compression.GZIP);
+        //CompoundBinaryTag tag = BinaryTagIO.reader().read(file.toPath(), BinaryTagIO.Compression.GZIP);
+        NamedTag tag_root = NBTUtil.read(file);
+        CompoundTag tag = (CompoundTag) tag_root.getTag();
 
         short height = tag.getShort("Height");
         short length = tag.getShort("Length");
@@ -26,22 +32,23 @@ public class SchemFileLoader {
 
         // Build the palette
 
-        CompoundBinaryTag paletteOriginal = tag.getCompound("Palette");
+        CompoundTag paletteOriginal = tag.getCompoundTag("Palette");
 
         Map<Integer, String> paletteMap = new HashMap<>();
 
 
         paletteOriginal.forEach(children -> {
             String blockName = children.getKey();
-            BinaryTag blockTag = children.getValue();
 
-            if (blockTag instanceof IntBinaryTag blockIndex) {
-
-                paletteMap.put(blockIndex.value(), blockName);
+            int blockIndex = paletteOriginal.getInt(blockName);
 
 
 
-            }
+            paletteMap.put(blockIndex, blockName);
+
+
+
+
         });
 
         // Loop through blocks and add to list

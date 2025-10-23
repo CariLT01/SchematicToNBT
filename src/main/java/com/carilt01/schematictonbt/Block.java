@@ -7,18 +7,25 @@ import java.util.TreeMap;
 
 public class Block {
     private Map<String, String> properties;
+    private TreeMap<String, String> propertiesTreemap;
     private String blockName;
+    private int cachedHash = 0;
+    private boolean hashCached = false;
 
     public Block() {
         this.properties = new HashMap<>();
+        this.propertiesTreemap = new TreeMap<>(properties);
     }
 
     public void setProperties(Map<String, String> properties) {
         this.properties = properties;
+        this.propertiesTreemap = new TreeMap<>(properties);
+        this.rebuildHash();
     }
 
     public void setBlockName(String blockName) {
         this.blockName = blockName;
+        this.rebuildHash();
     }
 
     public Map<String, String> getProperties() {
@@ -27,6 +34,11 @@ public class Block {
 
     public String getBlockName() {
         return this.blockName;
+    }
+
+    private void rebuildHash() {
+        cachedHash = this.getHash();
+        this.hashCached = true;
     }
 
     public static Map<String, String> parseBlockProperties(String blockState) {
@@ -66,20 +78,27 @@ public class Block {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Block)) return false;
+
         Block other = (Block) o;
         return Objects.equals(blockName, other.blockName) &&
-                Objects.equals(new TreeMap<>(properties), new TreeMap<>(other.properties));
+                Objects.equals(this.propertiesTreemap, other.propertiesTreemap);
     }
 
-    @Override
-    public int hashCode() {
+
+    private int getHash() {
         int accumulatedHash = (blockName == null ? 0 : blockName.hashCode());
-        Map<String, String> sortedProperties = new TreeMap<>(properties);
+        Map<String, String> sortedProperties = this.propertiesTreemap;
         for (Map.Entry<String, String> entry : sortedProperties.entrySet()) {
             int keyHash = entry.getKey() == null ? 0 : entry.getKey().hashCode();
             int valueHash = entry.getValue() == null ? 0 : entry.getValue().hashCode();
             accumulatedHash ^= keyHash ^ valueHash;
         }
         return accumulatedHash;
+    }
+
+    @Override
+    public int hashCode() {
+        // Use the same fields as in equals()
+        return Objects.hash(blockName, propertiesTreemap);
     }
 }

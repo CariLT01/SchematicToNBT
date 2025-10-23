@@ -1,4 +1,4 @@
-package com.carilt01.schematictonbt;
+/*package com.carilt01.schematictonbt;
 
 import net.kyori.adventure.nbt.*;
 
@@ -177,3 +177,4 @@ public class SchemToNBTStructure {
         }
     }
 }
+*/

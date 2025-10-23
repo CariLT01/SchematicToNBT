@@ -5,8 +5,9 @@ import com.carilt01.schematictonbt.Volume;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import net.kyori.adventure.nbt.BinaryTagIO;
-import net.kyori.adventure.nbt.CompoundBinaryTag;
+import net.querz.nbt.io.NBTUtil;
+import net.querz.nbt.io.NamedTag;
+import net.querz.nbt.tag.CompoundTag;
 
 import java.io.File;
 import java.io.FileReader;
@@ -46,7 +47,9 @@ public class SchematicFileLoader {
 
 
 
-        CompoundBinaryTag tag = BinaryTagIO.reader().read(file.toPath(), BinaryTagIO.Compression.GZIP);
+        //CompoundTag tag = BinaryTagIO.reader().read(file.toPath(), BinaryTagIO.Compression.GZIP);
+        NamedTag tag_root = NBTUtil.read(file);
+        CompoundTag tag = (CompoundTag) tag_root.getTag();
 
         short width = tag.getShort("Width");
         short height = tag.getShort("Height");

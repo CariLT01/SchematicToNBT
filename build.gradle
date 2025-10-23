@@ -7,15 +7,24 @@ version = '1.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
+    maven { url 'https://jitpack.io/' }
 }
 
 dependencies {
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
-    implementation 'net.kyori:adventure-nbt:4.14.0'
+    implementation 'com.github.Querz:NBT:6.1'
     implementation 'com.google.code.gson:gson:2.10.1'
 }
 
 test {
     useJUnitPlatform()
+}
+
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'com.carilt01.schematictonbt.Main'
+        )
+    }
 }
