@@ -31,6 +31,7 @@ public class NBTExporter {
 
         int paletteIndexCounter = 0;
         int airPaletteIndex = 0;
+        int numberOfBlocksSerialized = 0;
 
         for (Block uniqueBlock : uniqueBlocks) {
             CompoundTag propertiesTag = new CompoundTag();
@@ -53,7 +54,6 @@ public class NBTExporter {
 
             paletteListBinaryTag.add(blockTag);
 
-            int hash = uniqueBlock.hashCode();
             if (!blockPaletteIndex.containsKey(uniqueBlock)) {
                 if (Objects.equals(uniqueBlock.getBlockName(), "minecraft:air")) {
                     airPaletteIndex = paletteIndexCounter;
@@ -72,8 +72,12 @@ public class NBTExporter {
                 for (int x = 0; x < structureVolume.getWidth(); x++) {
 
                     Block blockAtPos = structureVolume.getBlockAt(x, y, z);
-                    int blockHash = blockAtPos.hashCode();
-                    int paletteIndex = blockPaletteIndex.getOrDefault(blockAtPos, 0);
+                    //int blockHash = blockAtPos.hashCode();
+                    if (!blockPaletteIndex.containsKey(blockAtPos)) {
+                        System.out.println("Warn: Block not found during serialization");
+                        continue;
+                    }
+                    int paletteIndex = blockPaletteIndex.get(blockAtPos);
                     if (paletteIndex == airPaletteIndex) continue;
                     ListTag<IntTag> positionTag = new ListTag<>(IntTag.class);
                     positionTag.add(new IntTag(x));
@@ -87,15 +91,21 @@ public class NBTExporter {
 
                     blocksListBinaryTag.add(blockTag);
 
+                    numberOfBlocksSerialized++;
+
                 }
             }
         }
 
+        System.out.println("Number of blocks serialized: " + numberOfBlocksSerialized);
+
         ListTag<IntTag> sizeBinaryTag = new ListTag<>(IntTag.class);
 
-        sizeBinaryTag.add(new IntTag(structureVolume.getWidth()));
-        sizeBinaryTag.add(new IntTag(structureVolume.getHeight()));
-        sizeBinaryTag.add(new IntTag(structureVolume.getLength()));
+        Vector3 boundingBox = structureVolume.getBoundingBox();
+
+        sizeBinaryTag.add(new IntTag((int)boundingBox.x));
+        sizeBinaryTag.add(new IntTag((int)boundingBox.y));
+        sizeBinaryTag.add(new IntTag((int)boundingBox.z));
 
         CompoundTag root = new CompoundTag();
         root.put("blocks", blocksListBinaryTag);

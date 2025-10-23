@@ -32,7 +32,7 @@ public class Main {
         }
 
         // Debug purposes
-        inputFile = (inputFile == null) ? "xerneas.schem" : inputFile;
+        inputFile = (inputFile == null) ? "235.schematic" : inputFile;
 
 
         Volume schematicVolume;
@@ -53,7 +53,7 @@ public class Main {
                 return;
             }
 
-            System.out.println("Splitting...");
+            /*System.out.println("Splitting...");
             List<Volume> splitVolumes = volumeSplitter.splitVolume(schematicVolume);
 
             System.out.println("Exporting volumes...");
@@ -61,9 +61,9 @@ public class Main {
             for (Volume vol : splitVolumes) {
                 nbtExporter.exportNbt(vol, "output_v2_schematic" + counter  + ".nbt");
                 counter++;
-            }
+            }*/
 
-            //nbtExporter.exportNbt(schematicVolume, "output_v2.nbt");
+            nbtExporter.exportNbt(schematicVolume, "output_v2.nbt");
         } catch (IOException e) {
             e.printStackTrace();
         }

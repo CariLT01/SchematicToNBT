@@ -45,6 +45,7 @@ public class VolumeMeasurementSerializer {
         Block[] blocks = volume.getBlocks();
         int width = volume.getWidth();
         int length = volume.getLength();
+        int numberOfBlocksSerialized = 0;
 
         for (int i = 0; i < blocks.length; i++) {
             Block b = blocks[i];
@@ -66,7 +67,19 @@ public class VolumeMeasurementSerializer {
             blockTag.put("state", new IntTag(palette.get(b)));
 
             blockListTag.add(blockTag);
+
+            numberOfBlocksSerialized++;
+
         }
+
+        int NUMBER_OF_BLOCKS_MAXIMUM = 256_000;
+
+        if (numberOfBlocksSerialized > NUMBER_OF_BLOCKS_MAXIMUM) {
+
+            return new byte[256 * 1024];
+        }
+
+        System.out.println("Number of blocks serialized:" + numberOfBlocksSerialized + "\n\n");
 
         CompoundTag root_ct = new CompoundTag();
         root_ct.put("blocks", blockListTag);

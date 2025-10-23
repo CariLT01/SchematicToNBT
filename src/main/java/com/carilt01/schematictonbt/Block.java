@@ -78,8 +78,7 @@ public class Block {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Block)) return false;
-        if (!this.hashCached) this.rebuildHash();
-        //if (o.hashCode() != this.cachedHash) return false;
+
         Block other = (Block) o;
         return Objects.equals(blockName, other.blockName) &&
                 Objects.equals(this.propertiesTreemap, other.propertiesTreemap);
@@ -99,9 +98,7 @@ public class Block {
 
     @Override
     public int hashCode() {
-        if (!this.hashCached) {
-            this.rebuildHash();
-        }
-        return this.cachedHash;
+        // Use the same fields as in equals()
+        return Objects.hash(blockName, propertiesTreemap);
     }
 }

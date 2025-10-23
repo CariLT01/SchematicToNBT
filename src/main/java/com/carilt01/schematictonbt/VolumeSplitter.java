@@ -50,13 +50,20 @@ public class VolumeSplitter {
 
                     int compressedSize = nbtData.length;
                     if (compressedSize < MAX_VOLUME_SIZE) {
+                        xChunkForColumn = curXChunk; // Save the smaller, valid width
                         System.out.print("\rReached a size of: " + Math.round((float) compressedSize / 1024) + " KB");
                         break;
                     }
 
-                    // Shrink only the local trial sizes
-                    curXChunk = Math.max(1, curXChunk / 2);
-                    curZChunk = Math.max(1, curZChunk / 2);
+                    // Shrink the axis more likely to reduce data first (heuristic)
+                    if (curXChunk >= curZChunk && curXChunk > 1) {
+                        curXChunk = Math.max(1, curXChunk / 2);
+                    } else if (curZChunk > 1) {
+                        curZChunk = Math.max(1, curZChunk / 2);
+                    } else {
+                        // both are 1 and still too big — cannot proceed
+                        throw new IOException("Single-block chunk exceeds MAX_VOLUME_SIZE");
+                    }
                 }
 
                 // Export using the final xEnd/zEnd determined above

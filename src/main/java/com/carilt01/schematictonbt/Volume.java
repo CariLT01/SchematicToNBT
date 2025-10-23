@@ -68,6 +68,34 @@ public class Volume {
 
     }
 
+    // Gets the bounding box of the volume BUT skips air blocks
+    public Vector3 getBoundingBox() {
+        int maxSizeX = 0;
+        int maxSizeY = 0;
+        int maxSizeZ = 0;
+
+        for (int i = 0; i < this.blocks.length; i++) {
+            // Convert linear index to x,y,z
+
+            Block b = this.blocks[i];
+            if (b.getBlockName().startsWith("minecraft:air")) continue;
+
+            int y = i / (width * length);
+            int z = (i / width) % length;
+            int x = i % width;
+
+            maxSizeX = Math.max(x, maxSizeX);
+            maxSizeY = Math.max(y, maxSizeY);
+            maxSizeZ = Math.max(z, maxSizeZ);
+        }
+
+        return new Vector3(
+                maxSizeX + 1,
+                maxSizeY + 1,
+                maxSizeZ + 1
+        );
+    }
+
     public Volume collectBlocksInArea(int startX, int startY, int startZ, int endX, int endY, int endZ) {
         Volume collectedArea = new Volume(endX - startX, endY - startY, endZ - startZ);
 
@@ -91,8 +119,14 @@ public class Volume {
             for (int z = startZ; z < endZ; z++) {
                 for (int x = startX; x < endX; x++) {
                     Block blockAtPos = this.getBlockAt(x, y, z);
+                    if (blockAtPos == null) {
+                        System.out.println("Warn: copying block failed at " + x + " "  + y  + " " + z);
+                    }
+                    Block clonedBlock = new Block();
+                    clonedBlock.setBlockName(blockAtPos.getBlockName());
+                    clonedBlock.setProperties(blockAtPos.getProperties());
 
-                    collectedArea.setBlock(x - startX, y - startY, z - startZ, blockAtPos);
+                    collectedArea.setBlock(x - startX, y - startY, z - startZ, clonedBlock);
                 }
             }
         }
