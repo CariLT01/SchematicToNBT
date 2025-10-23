@@ -31,7 +31,7 @@ public class Main {
         }
 
         // Debug purposes
-        inputFile = "270.schematic";
+        inputFile = "input.schem";
 
         if (inputFile == null) {
             System.out.println("No input file specified!");
