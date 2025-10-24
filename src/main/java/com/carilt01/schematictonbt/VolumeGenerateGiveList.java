@@ -32,7 +32,7 @@ public class VolumeGenerateGiveList {
 
             int dividor = 1;
 
-            if (entry.getKey().endsWith("door")) {
+            if (entry.getKey().endsWith("door") && !entry.getKey().endsWith("trapdoor")) {
                 dividor = 2;
             } else if (entry.getKey().endsWith("bed")) {
                 dividor = 2;
