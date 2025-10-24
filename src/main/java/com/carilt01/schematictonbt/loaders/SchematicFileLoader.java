@@ -80,7 +80,7 @@ public class SchematicFileLoader {
                     String entry = mappedBlockTypes.get(unsignedBlockData + ":" + blockMetadata);
                     String blockName = "";
 
-                    blockName = Objects.requireNonNullElse(entry, "minecraft:barrier");
+                    blockName = Objects.requireNonNullElse(entry, "minecraft:air");
 
                     Block newBlock = Block.fromBlockName(blockName);
 

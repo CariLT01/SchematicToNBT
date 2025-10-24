@@ -65,7 +65,7 @@ public class SchemFileLoader {
 
                     String blockName = paletteMap.get(typeInt);
                     if (blockName == null) {
-                        blockName = "minecraft:barrier";
+                        blockName = "minecraft:air";
                     }
                     Block newBlock = Block.fromBlockName(blockName);
 

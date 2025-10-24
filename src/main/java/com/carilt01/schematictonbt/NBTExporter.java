@@ -9,6 +9,8 @@ import net.querz.nbt.tag.Tag;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 
 public class NBTExporter {
@@ -32,6 +34,8 @@ public class NBTExporter {
         int paletteIndexCounter = 0;
         int airPaletteIndex = 0;
         int numberOfBlocksSerialized = 0;
+
+        final boolean WRITE_GIVE_LIST = true;
 
         for (Block uniqueBlock : uniqueBlocks) {
             CompoundTag propertiesTag = new CompoundTag();
@@ -121,5 +125,16 @@ public class NBTExporter {
         //BinaryTagIO.writer().write(root, outputFile.toPath(), BinaryTagIO.Compression.GZIP);
 
         System.out.println("Saved structure NBT: " + outputFile.getAbsolutePath());
+
+        if (WRITE_GIVE_LIST) {
+            VolumeGenerateGiveList giveListGenerator = new VolumeGenerateGiveList();
+
+            List<String> giveList = giveListGenerator.getGiveListFromVolume(structureVolume);
+
+            Path filePath = Path.of("schematics/" + outputFile.getName() + "-giveList.txt");
+            Files.write(filePath, giveList);
+
+            System.out.println("Wrote give list to: " + filePath.toAbsolutePath());
+        }
     }
 }

@@ -32,7 +32,7 @@ public class Main {
         }
 
         // Debug purposes
-        inputFile = (inputFile == null) ? "classic-cathedral.schem" : inputFile;
+        inputFile = (inputFile == null) ? "270.schematic" : inputFile;
         inputFile = "schematics/" + inputFile;
 
         Volume schematicVolume;
@@ -64,6 +64,8 @@ public class Main {
             }
 
             //nbtExporter.exportNbt(schematicVolume, "schematics/" + inputFile.replace("/", "") + ".nbt");
+
+
         } catch (IOException e) {
             e.printStackTrace();
         }
