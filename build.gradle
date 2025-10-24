@@ -15,6 +15,7 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter'
     implementation 'com.github.Querz:NBT:6.1'
     implementation 'com.google.code.gson:gson:2.10.1'
+
 }
 
 test {
