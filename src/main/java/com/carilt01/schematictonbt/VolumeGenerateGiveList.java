@@ -30,7 +30,16 @@ public class VolumeGenerateGiveList {
         List<String> giveList = new ArrayList<>();
 
         for (Map.Entry<String, Integer> entry: giveMap.entrySet()) {
-            giveList.add("/give @s " + entry.getKey() + " " + entry.getValue());
+
+            int dividor = 1;
+
+            if (entry.getKey().endsWith("door")) {
+                dividor = 2;
+            } else if (entry.getKey().endsWith("bed")) {
+                dividor = 2;
+            }
+
+            giveList.add("/give @s " + entry.getKey() + " " + entry.getValue() / dividor);
         }
 
         return giveList;
