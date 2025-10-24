@@ -32,7 +32,8 @@ public class Main {
         }
 
         // Debug purposes
-        inputFile = (inputFile == null) ? "270.schematic" : inputFile;
+        inputFile = (inputFile == null) ? "classic-cathedral.schem" : inputFile;
+        inputFile = "schematics/" + inputFile;
 
 
         Volume schematicVolume;
@@ -59,11 +60,11 @@ public class Main {
             System.out.println("Exporting volumes...");
             int counter = 0;
             for (Volume vol : splitVolumes) {
-                nbtExporter.exportNbt(vol, "output_v2_schematic" + counter  + ".nbt");
+                nbtExporter.exportNbt(vol, "schematics/" + inputFile.replace("/", "") + "." + counter  + ".nbt");
                 counter++;
             }
 
-            //nbtExporter.exportNbt(schematicVolume, "output_v2.nbt");
+            //nbtExporter.exportNbt(schematicVolume, "schematics/" + inputFile.replace("/", "") + ".nbt");
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -16,6 +16,12 @@ public class VolumeSplitter {
         final int initialZGuess = 2048;
         //final int MAX_VOLUME_SIZE = 246 * 1024;
         final int MAX_VOLUME_SIZE = 123 * 1024;
+
+
+        // Track progress
+        int blocksProcessed = 0;
+        int totalBlocks = volume.getWidth() * volume.getHeight() * volume.getLength();
+
         int xStart = 0;
         int yEnd = volume.getHeight();
 
@@ -69,6 +75,10 @@ public class VolumeSplitter {
                 // Export using the final xEnd/zEnd determined above
                 Volume areaVolume = volume.collectBlocksInArea(xStart, 0, zStart, xEnd, yEnd, zEnd);
                 completedVolumes.add(areaVolume);
+
+                blocksProcessed += areaVolume.getWidth() * areaVolume.getHeight() * areaVolume.getLength();
+
+                System.out.println("Blocks processed progress: " + Math.round((float) blocksProcessed / totalBlocks * 100) + "%");
 
                 // Advance zStart by the final chunk used for this piece
                 zStart += Math.min(curZChunk, zEnd - zStart);
