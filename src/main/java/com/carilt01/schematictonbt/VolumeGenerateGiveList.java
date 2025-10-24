@@ -22,8 +22,7 @@ public class VolumeGenerateGiveList {
                 giveMap.put(block.getBlockName(), 1);
                 continue;
             }
-            int count = giveMap.get(block.getBlockName());
-            giveMap.put(block.getBlockName(), count + 1);
+            giveMap.compute(block.getBlockName(), (k, count) -> count + 1);
 
         }
 
