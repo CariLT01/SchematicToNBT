@@ -38,7 +38,7 @@ public class VolumeGenerateGiveList {
                 dividor = 2;
             }
 
-            giveList.add("/give @s " + entry.getKey() + " " + entry.getValue() / dividor);
+            giveList.add("give @s " + entry.getKey().replace("wall_torch", "torch") + " " + entry.getValue() / dividor);
         }
 
         return giveList;
