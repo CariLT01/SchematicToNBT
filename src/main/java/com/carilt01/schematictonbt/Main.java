@@ -35,6 +35,7 @@ public class Main {
         inputFile = (inputFile == null) ? "270.schematic" : inputFile;
         inputFile = "schematics/" + inputFile;
 
+
         Volume schematicVolume;
 
         SchematicFileLoader schematicFileLoader = new SchematicFileLoader();

@@ -14,7 +14,9 @@ public class VolumeSplitter {
     public List<Volume> splitVolume(Volume volume) throws IOException {
         final int initialXGuess = 2048;
         final int initialZGuess = 2048;
-        final int MAX_VOLUME_SIZE = 246 * 1024;
+        //final int MAX_VOLUME_SIZE = 246 * 1024;
+        final int MAX_VOLUME_SIZE = 123 * 1024;
+
 
         // Track progress
         int blocksProcessed = 0;
