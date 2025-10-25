@@ -36,7 +36,7 @@ public class NBTExporter {
         Map<Block, Integer> blockPaletteIndex = new HashMap<>();
 
         int paletteIndexCounter = 0;
-        int airPaletteIndex = 0;
+        int airPaletteIndex = -1;
         int numberOfBlocksSerialized = 0;
 
         for (Block uniqueBlock : uniqueBlocks) {
@@ -53,6 +53,10 @@ public class NBTExporter {
                 paletteIndexCounter++;
             }
 
+        }
+
+        if (airPaletteIndex == -1) {
+            logger.warn("No air index found");
         }
 
 

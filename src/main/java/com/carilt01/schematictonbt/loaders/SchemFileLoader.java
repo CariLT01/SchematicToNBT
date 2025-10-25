@@ -76,30 +76,61 @@ public class SchemFileLoader {
             throw new IllegalArgumentException("Cannot find BlockData");
         }
 
-        for (int y = 0; y < height; y++) {
+        if (blocksDataOriginal.length != width * height * length) {
+            logger.warn("Block data does not match");
+            int[] offset = new int[]{0}; // pointer to current byte
+            for (int y = 0; y < height; y++) {
 
-            callback.update((float) y / height, "Loading schem file V2");
+                callback.update((float) y / height, "Loading schem file V2 (V3 format)");
 
-            for (int z = 0; z < length; z++) {
-                for (int x = 0; x < width; x++) {
+                for (int z = 0; z < length; z++) {
+                    for (int x = 0; x < width; x++) {
 
-                    int index = (y * width * length + z * width + x);
-                    byte type = blocksDataOriginal[index];
-                    int typeInt = type & 0xFF;
 
-                    String blockName = paletteMap.get(typeInt);
-                    if (blockName == null) {
-                        logger.warn("Invalid: wrong index palette not found");
-                        blockName = "minecraft:air";
+                        int typeInt = readVarInt(blocksDataOriginal, offset);
+
+
+                        String blockName = paletteMap.get(typeInt);
+                        if (blockName == null) {
+                            logger.warn("Invalid: wrong index palette not found");
+                            blockName = "minecraft:air";
+                        }
+                        Block newBlock = Block.fromBlockName(blockName);
+
+                        schemVolume.setBlock(x, y, z, newBlock);
+
+
                     }
-                    Block newBlock = Block.fromBlockName(blockName);
+                }
+            }
+        } else {
+            for (int y = 0; y < height; y++) {
 
-                    schemVolume.setBlock(x, y, z, newBlock);
+                callback.update((float) y / height, "Loading schem file V2");
+
+                for (int z = 0; z < length; z++) {
+                    for (int x = 0; x < width; x++) {
+
+                        int index = (y * width * length + z * width + x);
+                        byte type = blocksDataOriginal[index];
+                        int typeInt = type & 0xFF;
+
+                        String blockName = paletteMap.get(typeInt);
+                        if (blockName == null) {
+                            logger.warn("Invalid: wrong index palette not found");
+                            blockName = "minecraft:air";
+                        }
+                        Block newBlock = Block.fromBlockName(blockName);
+
+                        schemVolume.setBlock(x, y, z, newBlock);
 
 
+                    }
                 }
             }
         }
+
+
 
         return schemVolume;
     }

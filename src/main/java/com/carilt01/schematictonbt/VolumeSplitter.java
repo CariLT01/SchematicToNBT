@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class VolumeSplitter {
     private final VolumeMeasurementSerializer vms = new VolumeMeasurementSerializer();
@@ -18,6 +19,7 @@ public class VolumeSplitter {
     public List<VolumeCoords> splitVolume(Volume volume, ProgressCallback progressCallback, int maxVolumeSize) throws IOException {
         final int initialXGuess = 2048;
         final int initialZGuess = 2048;
+        final int blockLimit = 25_000_000;
         //final int MAX_VOLUME_SIZE = 246 * 1024;
 
 
@@ -56,15 +58,22 @@ public class VolumeSplitter {
 
                     logger.info("Getting size...");
                     Volume areaVolume = volume.collectBlocksInArea(xStart, 0, zStart, xEnd, yEnd, zEnd);
-                    logger.info("Serializing and estimating size...");
-                    byte[] nbtData = vms.serializeVolume(areaVolume);
 
-                    int compressedSize = nbtData.length;
-                    if (compressedSize < maxVolumeSize) {
-                        xChunkForColumn = curXChunk; // Save the smaller, valid width
-                        logger.info("Reached a size of: {} KB", Math.round((float) compressedSize / 1024));
-                        break;
+                    logger.info("Serializing and estimating size...");
+                    if (areaVolume.countNonAirBlocks() < blockLimit) {
+                        byte[] nbtData = vms.serializeVolume(areaVolume, Optional.of(progressCallback));
+                        progressCallback.update((float) blocksProcessed / totalBlocks, "Splitting volume...");
+
+                        int compressedSize = nbtData.length;
+                        if (compressedSize < maxVolumeSize) {
+                            xChunkForColumn = curXChunk; // Save the smaller, valid width
+                            logger.info("Reached a size of: {} KB", Math.round((float) compressedSize / 1024));
+                            break;
+                        }
+                    } else {
+                        logger.info("Volume too large, skip serialize step");
                     }
+
 
                     // Shrink the axis more likely to reduce data first (heuristic)
                     if (curXChunk >= curZChunk && curXChunk > 1) {

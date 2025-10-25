@@ -7,9 +7,9 @@ import java.util.*;
 
 public class Volume implements Iterable<Block> {
 
-    private final short[] blockData;
-    private final Map<Block, Integer> paletteMap;
-    private final Map<Integer, Block> paletteReverseMap;
+    public final short[] blockData;
+    public final Map<Block, Integer> paletteMap;
+    public final Map<Integer, Block> paletteReverseMap;
     private final int width;
     private final int height;
     private final int length;
@@ -190,6 +190,31 @@ public class Volume implements Iterable<Block> {
         }
 
         return new Vector3(x, 0, z);
+    }
+
+    public int countNonAirBlocks() {
+        Block airBlock = Block.fromBlockName("minecraft:air");
+        int airIndex = paletteMap.getOrDefault(airBlock, -1);
+
+        int counter  =0;
+        for (int i = 0; i < blockData.length; i++) {
+            if (airIndex != -1) {
+                if (i != airIndex) counter++;
+            } else {
+                if (!airBlock.getBlockName().startsWith("minecraft:air")) counter++;
+            }
+
+        }
+        return counter;
+    }
+
+    public int getAirIndex() {
+        for (Map.Entry<Block, Integer> entry : paletteMap.entrySet()) {
+            if (entry.getKey().getBlockName().startsWith("minecraft:air")) {
+                return entry.getValue();
+            }
+        }
+        return -1;
     }
 
 
