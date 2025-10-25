@@ -5,7 +5,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -45,7 +44,7 @@ public class VolumesLayoutImageExporter {
         };
     }
 
-    private static float lerp(float a, float b, float t) {
+    private static float linearInterpolate(float a, float b, float t) {
         return a + t * (b - a);
     }
 
@@ -193,7 +192,7 @@ public class VolumesLayoutImageExporter {
                 // global height (absolute brightness)
                 float globalHeight = (float) Math.pow(hC, gamma);
 
-                float brightness = localShade * lerp(0.6f, 1.2f, globalHeight);
+                float brightness = localShade * linearInterpolate(0.9f, 1.4f, globalHeight);
                 brightness = Math.max(0f, Math.min(1f, brightness));
 
                 int scalar = (int) (brightness * 255);
