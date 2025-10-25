@@ -1,9 +1,6 @@
 package com.carilt01.schematictonbt;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class VolumeGenerateGiveList {
 
@@ -30,15 +27,20 @@ public class VolumeGenerateGiveList {
 
         for (Map.Entry<String, Integer> entry: giveMap.entrySet()) {
 
+
             int dividor = 1;
 
-            if (entry.getKey().endsWith("door") && !entry.getKey().endsWith("trapdoor")) {
+            if (entry.getKey().endsWith("_door") && !entry.getKey().endsWith("trapdoor")) {
                 dividor = 2;
             } else if (entry.getKey().endsWith("bed")) {
                 dividor = 2;
             }
 
-            giveList.add("give @s " + entry.getKey().replace("wall_torch", "torch") + " " + entry.getValue() / dividor);
+            String blockName = entry.getKey();
+            blockName = blockName.replace("wall_torch", "torch");
+            blockName = blockName.replace("wall_sign", "oak_sign");
+
+            giveList.add("give @s " + blockName + " " + entry.getValue() / dividor);
         }
 
         return giveList;
