@@ -1,48 +1,35 @@
 package com.carilt01.schematictonbt;
 
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
 
-public class Block {
-    private Map<String, String> properties;
-    private TreeMap<String, String> propertiesTreemap;
-    private String blockName;
-    private int cachedHash = 0;
-    private boolean hashCached = false;
+public final class Block {
+    private final Map<String, String> properties; // immutable
+    private final String blockName;
+    private final int cachedHash;
 
-    public Block() {
-        this.properties = new HashMap<>();
-        this.propertiesTreemap = new TreeMap<>(properties);
-    }
-
-    public void setProperties(Map<String, String> properties) {
-        this.properties = properties;
-        this.propertiesTreemap = new TreeMap<>(properties);
-        this.rebuildHash();
-    }
-
-    public void setBlockName(String blockName) {
+    /**
+     * Private constructor. Use static factory methods to create a Block.
+     */
+    private Block(String blockName, Map<String, String> properties) {
         this.blockName = blockName;
-        this.rebuildHash();
+        // Create a sorted, unmodifiable copy of properties for consistency
+        this.properties = Collections.unmodifiableMap(new TreeMap<>(properties));
+        this.cachedHash = computeHash();
     }
 
-    public Map<String, String> getProperties() {
-        return this.properties;
+    // --- Factory method to parse from string ---
+    public static Block fromBlockName(String name) {
+        Map<String, String> blockProperties = parseBlockProperties(name);
+        String blockName = name.split("\\[")[0];
+        return new Block(blockName, blockProperties);
     }
 
-    public String getBlockName() {
-        return this.blockName;
-    }
-
-    private void rebuildHash() {
-        cachedHash = this.getHash();
-        this.hashCached = true;
-    }
-
-    public static Map<String, String> parseBlockProperties(String blockState) {
-        Map<String, String> properties = new HashMap<>();
+    // --- Parse block properties from string like "stone[foo=bar]" ---
+    private static Map<String, String> parseBlockProperties(String blockState) {
+        Map<String, String> properties = new TreeMap<>();
 
         int bracketStart = blockState.indexOf('[');
         int bracketEnd = blockState.indexOf(']');
@@ -61,44 +48,46 @@ public class Block {
         return properties;
     }
 
-    public static Block fromBlockName(String name) {
-        Map<String, String> blockProperties = parseBlockProperties(name);
-        String blockName = name.split("\\[")[0];
-
-        Block newBlock = new Block();
-        newBlock.setBlockName(blockName);
-        newBlock.setProperties(blockProperties);
-
-        return newBlock;
+    // --- Getters ---
+    public String getBlockName() {
+        return blockName;
     }
 
-
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Block)) return false;
-
-        Block other = (Block) o;
-        return Objects.equals(blockName, other.blockName) &&
-                Objects.equals(this.propertiesTreemap, other.propertiesTreemap);
+    public Map<String, String> getProperties() {
+        return properties;
     }
 
-
-    private int getHash() {
-        int accumulatedHash = (blockName == null ? 0 : blockName.hashCode());
-        Map<String, String> sortedProperties = this.propertiesTreemap;
-        for (Map.Entry<String, String> entry : sortedProperties.entrySet()) {
-            int keyHash = entry.getKey() == null ? 0 : entry.getKey().hashCode();
-            int valueHash = entry.getValue() == null ? 0 : entry.getValue().hashCode();
-            accumulatedHash ^= keyHash ^ valueHash;
+    // --- Hashing and equality ---
+    private int computeHash() {
+        int hash = blockName == null ? 0 : blockName.hashCode();
+        for (Map.Entry<String, String> entry : properties.entrySet()) {
+            hash ^= (entry.getKey() == null ? 0 : entry.getKey().hashCode())
+                    ^ (entry.getValue() == null ? 0 : entry.getValue().hashCode());
         }
-        return accumulatedHash;
+        return hash;
     }
 
     @Override
     public int hashCode() {
-        // Use the same fields as in equals()
-        return Objects.hash(blockName, propertiesTreemap);
+        return cachedHash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Block)) return false;
+        Block other = (Block) obj;
+        return Objects.equals(blockName, other.blockName) &&
+                Objects.equals(properties, other.properties);
+    }
+
+    @Override
+    public String toString() {
+        if (properties.isEmpty()) return blockName;
+        StringBuilder sb = new StringBuilder(blockName).append('[');
+        properties.forEach((k, v) -> sb.append(k).append('=').append(v).append(','));
+        sb.setLength(sb.length() - 1); // remove last comma
+        sb.append(']');
+        return sb.toString();
     }
 }

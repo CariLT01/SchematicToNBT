@@ -11,11 +11,10 @@ public class VolumeSplitter {
 
     }
 
-    public List<Volume> splitVolume(Volume volume) throws IOException {
+    public List<VolumeCoords> splitVolume(Volume volume, ProgressCallback progressCallback, int maxVolumeSize) throws IOException {
         final int initialXGuess = 2048;
         final int initialZGuess = 2048;
         //final int MAX_VOLUME_SIZE = 246 * 1024;
-        final int MAX_VOLUME_SIZE = 123 * 1024;
 
 
         // Track progress
@@ -25,7 +24,9 @@ public class VolumeSplitter {
         int xStart = 0;
         int yEnd = volume.getHeight();
 
-        List<Volume> completedVolumes = new ArrayList<>();
+        List<VolumeCoords> completedVolumes = new ArrayList<>();
+
+        progressCallback.update(0, "Splitting volume...");
 
         while (xStart < volume.getWidth()) {
             int zStart = 0;
@@ -54,8 +55,11 @@ public class VolumeSplitter {
                     System.out.print("\rSerializing and estimating size...");
                     byte[] nbtData = vms.serializeVolume(areaVolume);
 
+                    areaVolume = null;
+
                     int compressedSize = nbtData.length;
-                    if (compressedSize < MAX_VOLUME_SIZE) {
+                    nbtData = null;
+                    if (compressedSize < maxVolumeSize) {
                         xChunkForColumn = curXChunk; // Save the smaller, valid width
                         System.out.print("\rReached a size of: " + Math.round((float) compressedSize / 1024) + " KB");
                         break;
@@ -73,10 +77,12 @@ public class VolumeSplitter {
                 }
 
                 // Export using the final xEnd/zEnd determined above
-                Volume areaVolume = volume.collectBlocksInArea(xStart, 0, zStart, xEnd, yEnd, zEnd);
-                completedVolumes.add(areaVolume);
+                //Volume areaVolume = volume.collectBlocksInArea(xStart, 0, zStart, xEnd, yEnd, zEnd);
+                completedVolumes.add(new VolumeCoords(xStart, 0, zStart, xEnd, yEnd, zEnd));
 
-                blocksProcessed += areaVolume.getWidth() * areaVolume.getHeight() * areaVolume.getLength();
+                blocksProcessed += (xEnd - xStart) * (yEnd) * (zEnd - zStart);
+
+                progressCallback.update((float) blocksProcessed / totalBlocks, "Splitting volume...");
 
                 System.out.println("Blocks processed progress: " + Math.round((float) blocksProcessed / totalBlocks * 100) + "%");
 

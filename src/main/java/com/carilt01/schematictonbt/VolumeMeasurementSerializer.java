@@ -31,7 +31,7 @@ public class VolumeMeasurementSerializer {
         //Map<Block, Integer> palette = new HashMap<>();
         AtomicInteger paletteIndex = new AtomicInteger(0);
 
-        for (Block b : volume.getBlocks()) {
+        for (Block b : volume) {
             if (b.getBlockName().startsWith("minecraft:air")) continue;
             palette.computeIfAbsent(b, key -> paletteIndex.getAndIncrement());
         }
@@ -42,13 +42,13 @@ public class VolumeMeasurementSerializer {
 
         // --- 2. Build NBT blocks efficiently ---
 
-        Block[] blocks = volume.getBlocks();
+
         int width = volume.getWidth();
         int length = volume.getLength();
         int numberOfBlocksSerialized = 0;
 
-        for (int i = 0; i < blocks.length; i++) {
-            Block b = blocks[i];
+        int i =0;
+        for (Block b: volume) {
             if (b.getBlockName().startsWith("minecraft:air")) continue;
 
             // Convert linear index to x,y,z
@@ -69,6 +69,7 @@ public class VolumeMeasurementSerializer {
             blockListTag.add(blockTag);
 
             numberOfBlocksSerialized++;
+            i++;
 
         }
 

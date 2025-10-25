@@ -19,7 +19,7 @@ public class NBTExporter {
     }
 
     public static Set<Block> volumeGetUniqueBlocks(Volume structureVolume) {
-        return new HashSet<>(Arrays.asList(structureVolume.getBlocks()));
+        return structureVolume.getUniqueBlocks();
     }
 
 

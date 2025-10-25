@@ -1,11 +1,16 @@
 package com.carilt01.schematictonbt;
 
-public class Volume {
+import java.util.*;
 
-    private final Block[] blocks;
+public class Volume implements Iterable<Block> {
+
+    private short[] blockData;
+    private Map<Block, Integer> paletteMap;
+    private Map<Integer, Block> paletteReverseMap;
     private final int width;
     private final int height;
     private final int length;
+    private int paletteCounter;
 
     private boolean hasBeenManipulated = false;
 
@@ -15,7 +20,9 @@ public class Volume {
         this.height = height;
         this.length = length;
 
-        blocks = new Block[width * height * length];
+        blockData = new short[width * height * length];
+        paletteMap = new HashMap<>();
+        paletteReverseMap = new HashMap<>();
 
     }
 
@@ -32,13 +39,37 @@ public class Volume {
     public void setBlock(int x, int y, int z, Block newBlock) {
         int index = (y * width * length) + (z * width) + x;
 
-        blocks[index] = newBlock;
+        if (!paletteMap.containsKey(newBlock)) {
+            paletteMap.put(newBlock, paletteCounter);
+            paletteReverseMap.put(paletteCounter, newBlock);
+            paletteCounter++;
+        }
+
+        blockData[index] = paletteMap.get(newBlock).shortValue();
 
         hasBeenManipulated = true;
     }
 
-    public Block[] getBlocks() {
-        return this.blocks;
+    @Override
+    public Iterator<Block> iterator() {
+        return new Iterator<Block>() {
+            private int index = 0;
+
+            @Override
+            public boolean hasNext() {
+                return index < blockData.length;
+            }
+
+            @Override
+            public Block next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
+                short i = blockData[index++];
+
+                return paletteReverseMap.get((int)i);
+            }
+        };
     }
 
     public Block getBlockAt(int x, int y, int z) throws IndexOutOfBoundsException {
@@ -56,7 +87,8 @@ public class Volume {
 
         int index = (y * width * length) + (z * width) + x;
 
-        Block theBlock = blocks[index];
+        int blockPaletteIndex = blockData[index];
+        Block theBlock = paletteReverseMap.get(blockPaletteIndex);
 
         if (theBlock == null) {
             throw new IndexOutOfBoundsException("Can't find block at index at " + x + ", " + y + ", " + z);
@@ -74,10 +106,11 @@ public class Volume {
         int maxSizeY = 0;
         int maxSizeZ = 0;
 
-        for (int i = 0; i < this.blocks.length; i++) {
+        for (int i = 0; i < blockData.length; i++) {
             // Convert linear index to x,y,z
 
-            Block b = this.blocks[i];
+            int bIndex = blockData[i];
+            Block b = this.paletteReverseMap.get(bIndex);
             if (b.getBlockName().startsWith("minecraft:air")) continue;
 
             int y = i / (width * length);
@@ -94,6 +127,10 @@ public class Volume {
                 maxSizeY + 1,
                 maxSizeZ + 1
         );
+    }
+
+    public Set<Block> getUniqueBlocks() {
+        return new HashSet<>(paletteMap.keySet());
     }
 
     public Volume collectBlocksInArea(int startX, int startY, int startZ, int endX, int endY, int endZ) {
@@ -122,11 +159,9 @@ public class Volume {
                     if (blockAtPos == null) {
                         System.out.println("Warn: copying block failed at " + x + " "  + y  + " " + z);
                     }
-                    Block clonedBlock = new Block();
-                    clonedBlock.setBlockName(blockAtPos.getBlockName());
-                    clonedBlock.setProperties(blockAtPos.getProperties());
 
-                    collectedArea.setBlock(x - startX, y - startY, z - startZ, clonedBlock);
+
+                    collectedArea.setBlock(x - startX, y - startY, z - startZ, blockAtPos);
                 }
             }
         }
