@@ -44,7 +44,8 @@ public class VolumeGenerateGiveList {
 
             String blockName = entry.getKey();
             blockName = blockName.replace("wall_torch", "torch");
-            blockName = blockName.replace("wall_sign", "oak_sign");
+            blockName = blockName.replace("sign", "oak_sign");
+            blockName = blockName.replace("tripwire", "tripwire_hook");
 
             giveList.add("give @s " + blockName + " " + entry.getValue() / dividor);
         }
