@@ -4,10 +4,9 @@ import javax.swing.*;
 
 public class IntegerInput {
 
-    private JFrame frame;
 
-    public IntegerInput(JFrame frame) {
-        this.frame = frame;
+    public IntegerInput() {
+
     }
 
     public int askForInt(String message) {

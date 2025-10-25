@@ -75,8 +75,7 @@ public final class Block {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        if (!(obj instanceof Block)) return false;
-        Block other = (Block) obj;
+        if (!(obj instanceof Block other)) return false;
         return Objects.equals(blockName, other.blockName) &&
                 Objects.equals(properties, other.properties);
     }

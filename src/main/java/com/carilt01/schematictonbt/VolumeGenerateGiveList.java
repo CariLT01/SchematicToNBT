@@ -22,6 +22,8 @@ public class VolumeGenerateGiveList {
 
             giveMap.compute(block.getBlockName(), (k, count) -> count + 1);
 
+
+
         }
 
         return getGiveList(giveMap);
@@ -34,12 +36,12 @@ public class VolumeGenerateGiveList {
         for (Map.Entry<String, Integer> entry: giveMap.entrySet()) {
 
 
-            int dividor = 1;
+            int divisor = 1;
 
             if (entry.getKey().endsWith("_door") && !entry.getKey().endsWith("trapdoor")) {
-                dividor = 2;
+                divisor = 2;
             } else if (entry.getKey().endsWith("bed")) {
-                dividor = 2;
+                divisor = 2;
             }
 
             String blockName = entry.getKey();
@@ -48,7 +50,7 @@ public class VolumeGenerateGiveList {
             blockName = blockName.replace("wall_sign", "oak_sign");
             blockName = blockName.replace("tripwire", "tripwire_hook");
 
-            giveList.add("give @s " + blockName + " " + entry.getValue() / dividor);
+            giveList.add("give @s " + blockName + " " + entry.getValue() / divisor);
         }
         return giveList;
     }

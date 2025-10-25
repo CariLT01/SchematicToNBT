@@ -5,7 +5,6 @@ import net.querz.nbt.io.NBTUtil;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.IntTag;
 import net.querz.nbt.tag.ListTag;
-import net.querz.nbt.tag.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,25 +39,8 @@ public class NBTExporter {
         int airPaletteIndex = 0;
         int numberOfBlocksSerialized = 0;
 
-        final boolean WRITE_GIVE_LIST = true;
-
         for (Block uniqueBlock : uniqueBlocks) {
-            CompoundTag propertiesTag = new CompoundTag();
-
-            for (Map.Entry<String, String> property : uniqueBlock.getProperties().entrySet()) {
-                propertiesTag.putString(property.getKey(), property.getValue());
-            }
-
-            CompoundTag blockTag = new CompoundTag();
-            if (uniqueBlock.getProperties().size() <= 0) {
-                blockTag.putString("Name", uniqueBlock.getBlockName());
-            } else {
-                blockTag.put("Properties", propertiesTag);
-                blockTag.putString("Name", uniqueBlock.getBlockName());
-
-            }
-
-
+            CompoundTag blockTag = getEntries(uniqueBlock);
 
 
             paletteListBinaryTag.add(blockTag);
@@ -131,15 +113,31 @@ public class NBTExporter {
 
         logger.info("Saved structure NBT: {}", outputFile.getAbsolutePath());
 
-        if (WRITE_GIVE_LIST) {
-            VolumeGenerateGiveList giveListGenerator = new VolumeGenerateGiveList();
+        VolumeGenerateGiveList giveListGenerator = new VolumeGenerateGiveList();
 
-            List<String> giveList = giveListGenerator.getGiveListFromVolume(structureVolume);
+        List<String> giveList = giveListGenerator.getGiveListFromVolume(structureVolume);
 
-            Path filePath = Path.of("schematics/" + outputFile.getName() + "-giveList.txt");
-            Files.write(filePath, giveList);
+        Path filePath = Path.of("schematics/" + outputFile.getName() + "-giveList.txt");
+        Files.write(filePath, giveList);
 
-            logger.info("Wrote give list to: {}", filePath.toAbsolutePath());
+        logger.info("Wrote give list to: {}", filePath.toAbsolutePath());
+    }
+
+    private static CompoundTag getEntries(Block uniqueBlock) {
+        CompoundTag propertiesTag = new CompoundTag();
+
+        for (Map.Entry<String, String> property : uniqueBlock.getProperties().entrySet()) {
+            propertiesTag.putString(property.getKey(), property.getValue());
         }
+
+        CompoundTag blockTag = new CompoundTag();
+        if (uniqueBlock.getProperties().isEmpty()) {
+            blockTag.putString("Name", uniqueBlock.getBlockName());
+        } else {
+            blockTag.put("Properties", propertiesTag);
+            blockTag.putString("Name", uniqueBlock.getBlockName());
+
+        }
+        return blockTag;
     }
 }

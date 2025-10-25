@@ -81,7 +81,7 @@ public class SchematicFileLoader {
                     byte blockMetadata = metadataOriginal[index];
                     int unsignedBlockData = blockData & 0xFF;
                     String entry = mappedBlockTypes.get(unsignedBlockData + ":" + blockMetadata);
-                    String blockName = "";
+                    String blockName;
 
                     blockName = Objects.requireNonNullElse(entry, "minecraft:air");
 

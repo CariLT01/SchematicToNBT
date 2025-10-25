@@ -30,7 +30,7 @@ public class Application {
             @Override
             public void startProcessFile(String filePath) {
 
-                IntegerInput integerInput = new IntegerInput(mainUI.getFrame());
+                IntegerInput integerInput = new IntegerInput();
                 int maxVolumeSize = integerInput.askForInt("Maximum KB per file (default: 246)");
                 mainUI.setProgressBarVisible(true);
                 mainUI.setProgressTextVisible(true);
@@ -55,10 +55,6 @@ public class Application {
 
             }
 
-            @Override
-            public void startExecuteGiveList(String filePath) {
-
-            }
         };
 
         mainUI = new MainUI(callbacks);

@@ -2,8 +2,6 @@ package com.carilt01.schematictonbt;
 
 import com.carilt01.schematictonbt.loaders.SchemFileLoader;
 import com.carilt01.schematictonbt.loaders.SchematicFileLoader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,7 +15,6 @@ public class SchematicToNBTConverter {
     private final NBTExporter nbtExporter;
     private final VolumeSplitter volumeSplitter;
     private final VolumesLayoutImageExporter volumesLayoutImageExporter;
-    private static final Logger logger = LoggerFactory.getLogger(SchematicToNBTConverter.class);
 
     public SchematicToNBTConverter() {
         schematicFileLoader = new SchematicFileLoader();
@@ -55,7 +52,7 @@ public class SchematicToNBTConverter {
 
 
 
-        List<VolumeCoords> outputCoords = this.volumeSplitter.splitVolume(structureVolume, progressCallback, maxVolumeSize);
+        List<VolumeCoords> outputCoordinates = this.volumeSplitter.splitVolume(structureVolume, progressCallback, maxVolumeSize);
 
         // Convert to Volume block
 
@@ -63,9 +60,9 @@ public class SchematicToNBTConverter {
 
         int tracker = 0;
 
-        for (VolumeCoords coordinates : outputCoords) {
+        for (VolumeCoords coordinates : outputCoordinates) {
             tracker++;
-            progressCallback.update((float) tracker / outputCoords.size(), "Unpacking...");
+            progressCallback.update((float) tracker / outputCoordinates.size(), "Unpacking...");
 
             Volume vol = structureVolume.collectBlocksInArea(
                     coordinates.beginX(),
@@ -90,10 +87,7 @@ public class SchematicToNBTConverter {
             counter++;
         }
 
-        splittedVolumes = null; // Free memory (at least, attempt to)
-        structureVolume = null;
-        splittedVolumes = null;
-        outputCoords = null;
+        // Free memory (at least, attempt to)
 
 
     }

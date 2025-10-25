@@ -56,7 +56,7 @@ public class Volume implements Iterable<Block> {
 
     @Override
     public Iterator<Block> iterator() {
-        return new Iterator<Block>() {
+        return new Iterator<>() {
             private int index = 0;
 
             @Override
@@ -71,7 +71,7 @@ public class Volume implements Iterable<Block> {
                 }
                 short i = blockData[index++];
 
-                return paletteReverseMap.get((int)i);
+                return paletteReverseMap.get((int) i);
             }
         };
     }

@@ -94,14 +94,14 @@ public class VolumeMeasurementSerializer {
 
         logger.info("Serializing...");
         byte[] nbtData;
-        try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
-             GZIPOutputStream gzipOut = new GZIPOutputStream(baos);
+        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+             GZIPOutputStream gzipOut = new GZIPOutputStream(byteArrayOutputStream);
              NBTOutputStream nbtOut = new NBTOutputStream(gzipOut)) {
 
             nbtOut.writeTag(root, 512);
             nbtOut.flush();
             gzipOut.finish(); // finalize compression
-            nbtData = baos.toByteArray();
+            nbtData = byteArrayOutputStream.toByteArray();
         }
         return nbtData;
     }

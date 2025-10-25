@@ -8,8 +8,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 
 public class MainUI {
@@ -17,11 +15,10 @@ public class MainUI {
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(MainUI.class);
     private JFrame frame;
     private JProgressBar progressBar;
-    private JTextArea logArea;
     private NativeFileChooser nativeFileChooser;
     private JLabel progressText;
 
-    private Callback callbacks;
+    private final Callback callbacks;
 
     public MainUI(Callback callbacks) {
         this.callbacks = callbacks;
@@ -75,24 +72,7 @@ public class MainUI {
         title.setFont(new Font("SansSerif", Font.BOLD, 24));
         title.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        logArea = new JTextArea();
-        logArea.setEditable(false);
-        logArea.setLineWrap(true);
-        logArea.setWrapStyleWord(true);
-
-        LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
-        Logger rootLogger = context.getLogger(Logger.ROOT_LOGGER_NAME); // Root logger
-
-        TextAreaAppender appender = new TextAreaAppender(logArea, 200);
-        appender.setContext(context);
-        appender.start();
-        rootLogger.addAppender(appender);
-
-
-        JScrollPane scrollPane = new JScrollPane(logArea);
-        scrollPane.setPreferredSize(new Dimension(250, 250));
-        scrollPane.setMaximumSize(new Dimension(600, 250));
-        scrollPane.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JScrollPane scrollPane = getJScrollPane();
 
         JPanel actionsPanel = new JPanel();
         actionsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -106,15 +86,12 @@ public class MainUI {
         actionsPanel.add(executeGiveListButton);
 
 
-        loadSchematicFileButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        loadSchematicFileButton.addActionListener(e -> {
 
-                File selectedFile = nativeFileChooser.chooseFile();
-                if (selectedFile == null) return;
+            File selectedFile = nativeFileChooser.chooseFile();
+            if (selectedFile == null) return;
 
-                callbacks.startProcessFile(selectedFile.getAbsolutePath());
-            }
+            callbacks.startProcessFile(selectedFile.getAbsolutePath());
         });
 
         mainMenuRoot.add(Box.createVerticalGlue()); // center vertically
@@ -134,51 +111,59 @@ public class MainUI {
 
     }
 
+    private static JScrollPane getJScrollPane() {
+        JTextArea logArea = new JTextArea();
+        logArea.setEditable(false);
+        logArea.setLineWrap(true);
+        logArea.setWrapStyleWord(true);
+
+        LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+        Logger rootLogger = context.getLogger(Logger.ROOT_LOGGER_NAME); // Root logger
+
+        TextAreaAppender appender = new TextAreaAppender(logArea, 200);
+        appender.setContext(context);
+        appender.start();
+        rootLogger.addAppender(appender);
+
+
+        JScrollPane scrollPane = new JScrollPane(logArea);
+        scrollPane.setPreferredSize(new Dimension(250, 250));
+        scrollPane.setMaximumSize(new Dimension(600, 250));
+        scrollPane.setAlignmentX(Component.CENTER_ALIGNMENT);
+        return scrollPane;
+    }
+
     public void showWindow() {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
     }
 
     public void setProgress(float progress) {
-        SwingUtilities.invokeLater(() -> {
-            progressBar.setValue(Math.round(progress * 100));
-        });
+        SwingUtilities.invokeLater(() -> progressBar.setValue(Math.round(progress * 100)));
 
     }
 
     public void setProgressBarVisible(boolean visible) {
-        SwingUtilities.invokeLater(() -> {
-            progressBar.setVisible(visible);
-        });
+        SwingUtilities.invokeLater(() -> progressBar.setVisible(visible));
 
     }
 
     public void showError(String errorMessage) {
-        SwingUtilities.invokeLater(() -> {
-            JOptionPane.showMessageDialog(
-                    frame,
-                    errorMessage,
-                    "Schematic to NBT",
-                    JOptionPane.ERROR_MESSAGE
-            );
-        });
+        SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(
+                frame,
+                errorMessage,
+                "Schematic to NBT",
+                JOptionPane.ERROR_MESSAGE
+        ));
 
-    }
-
-    public JFrame getFrame() {
-        return frame;
     }
 
     public void setProgressText(String text) {
-        SwingUtilities.invokeLater(() -> {
-            progressText.setText(text);
-        });
+        SwingUtilities.invokeLater(() -> progressText.setText(text));
     }
 
     public void setProgressTextVisible(boolean visible) {
-        SwingUtilities.invokeLater(() -> {
-            progressText.setVisible(visible);
-        });
+        SwingUtilities.invokeLater(() -> progressText.setVisible(visible));
     }
 
 }

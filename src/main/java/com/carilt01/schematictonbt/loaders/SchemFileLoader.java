@@ -5,8 +5,6 @@ import com.carilt01.schematictonbt.Volume;
 import net.querz.nbt.io.NBTUtil;
 import net.querz.nbt.io.NamedTag;
 import net.querz.nbt.tag.CompoundTag;
-import net.querz.nbt.tag.IntTag;
-import net.querz.nbt.tag.Tag;
 
 import java.io.File;
 import java.io.IOException;
