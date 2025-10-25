@@ -46,7 +46,7 @@ public class VolumeGenerateGiveList {
             blockName = blockName.replace("wall_torch", "torch");
             blockName = blockName.replace("wall_sign", "oak_sign");
 
-            giveList.add("/give @s " + blockName + " " + entry.getValue() / dividor);
+            giveList.add("give @s " + blockName + " " + entry.getValue() / dividor);
         }
         return giveList;
     }
