@@ -117,7 +117,7 @@ public class NBTExporter {
 
         List<String> giveList = giveListGenerator.getGiveListFromVolume(structureVolume);
 
-        Path filePath = Path.of("schematics/" + outputFile.getName() + "-giveList.txt");
+        Path filePath = Path.of(outputFile.getAbsolutePath() + "-giveList.txt");
         Files.write(filePath, giveList);
 
         logger.info("Wrote give list to: {}", filePath.toAbsolutePath());
