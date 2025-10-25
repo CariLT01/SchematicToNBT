@@ -19,10 +19,16 @@ public class VolumeGenerateGiveList {
                 giveMap.put(block.getBlockName(), 1);
                 continue;
             }
+
             giveMap.compute(block.getBlockName(), (k, count) -> count + 1);
 
         }
 
+        return getGiveList(giveMap);
+
+    }
+
+    private static List<String> getGiveList(Map<String, Integer> giveMap) {
         List<String> giveList = new ArrayList<>();
 
         for (Map.Entry<String, Integer> entry: giveMap.entrySet()) {
@@ -42,9 +48,7 @@ public class VolumeGenerateGiveList {
 
             giveList.add("/give @s " + blockName + " " + entry.getValue() / dividor);
         }
-
         return giveList;
-
     }
 
 }
