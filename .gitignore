@@ -44,3 +44,5 @@ bin/
 ### Schematics ###
 schematics/*
 !/schematics/.gitignore
+
+./idea
