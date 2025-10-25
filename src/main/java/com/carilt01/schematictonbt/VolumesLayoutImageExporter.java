@@ -46,56 +46,65 @@ public class VolumesLayoutImageExporter {
     }
 
     public void exportLayout(List<VolumeBlockEntry> volumes, int structureWidth, int structureLength, String outputPath) throws IOException {
-        final int IMAGE_WIDTH = 2048;
-        final int IMAGE_HEIGHT = 2048;
+        // Base size (can scale up or down)
+        final int BASE_SIZE = 2048;
 
-        BufferedImage image = new BufferedImage(IMAGE_WIDTH, IMAGE_HEIGHT, BufferedImage.TYPE_INT_ARGB);
+        // Calculate aspect ratio
+        float aspectRatio = (float) structureWidth / structureLength;
 
+        int imageWidth, imageHeight;
+
+        if (aspectRatio >= 1) {
+            // Wider than tall
+            imageWidth = BASE_SIZE;
+            imageHeight = Math.round(BASE_SIZE / aspectRatio);
+        } else {
+            // Taller than wide
+            imageHeight = BASE_SIZE;
+            imageWidth = Math.round(BASE_SIZE * aspectRatio);
+        }
+
+        BufferedImage image = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = image.createGraphics();
 
         int index = 0;
-
         List<int[]> colors = new ArrayList<>();
 
+        // Generate HSL-based colors
         for (int i = 0; i < volumes.size(); i++) {
             float t = (float) i / volumes.size();
             int[] colorRGB = hslToRgb(t, 0.5f, 0.5f);
-
             colors.add(colorRGB);
         }
 
         Collections.shuffle(colors);
 
         for (VolumeBlockEntry entry : volumes) {
-
             int[] colorRGB = colors.get(index);
-
             g.setColor(new Color(colorRGB[0], colorRGB[1], colorRGB[2]));
 
-            int x = Math.round((float) entry.beginX() / structureWidth * IMAGE_WIDTH);
-            int y = Math.round((float) entry.beginY() / structureLength * IMAGE_HEIGHT);
-            int w = Math.round((float) entry.volume().getWidth() / structureWidth * IMAGE_WIDTH);
-            int hgt = Math.round((float) entry.volume().getLength() / structureLength * IMAGE_HEIGHT);
+            // Scale positions and sizes according to new image dimensions
+            int x = Math.round((float) entry.beginX() / structureWidth * imageWidth);
+            int y = Math.round((float) entry.beginY() / structureLength * imageHeight);
+            int w = Math.round((float) entry.volume().getWidth() / structureWidth * imageWidth);
+            int hgt = Math.round((float) entry.volume().getLength() / structureLength * imageHeight);
 
             g.fillRect(x, y, w, hgt);
 
             // Draw black border
             g.setColor(Color.BLACK);
-            g.setStroke(new BasicStroke(3)); // thickness of 3 pixels
+            g.setStroke(new BasicStroke(3));
             g.drawRect(x, y, w, hgt);
 
+            // Draw index text
             g.setFont(new Font("Arial", Font.BOLD, 36));
-
             g.drawString(Integer.toString(index), x + w / 2, y + hgt / 2);
 
             index++;
-
         }
 
         g.dispose();
         ImageIO.write(image, "png", new File(outputPath));
-
-
-
     }
+
 }
