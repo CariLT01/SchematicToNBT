@@ -173,5 +173,16 @@ public class Volume implements Iterable<Block> {
         return collectedArea;
     }
 
+    public Vector3 getHighestPositionAt(int x, int z) {
+        for (int i = getHeight() - 1; i >= 0; i--) {
+            Block targetBlockAtPos = this.getBlockAt(x, i, z);
+            if (!Objects.equals(targetBlockAtPos.getBlockName(), "minecraft:air")) {
+                return new Vector3(x, i, z);
+            }
+        }
+
+        return new Vector3(x, 0, z);
+    }
+
 
 }

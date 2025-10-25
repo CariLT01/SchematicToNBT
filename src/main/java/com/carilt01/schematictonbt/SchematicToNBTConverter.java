@@ -75,7 +75,7 @@ public class SchematicToNBTConverter {
             splittedVolumes.add(new VolumeBlockEntry(vol, coordinates.beginX(), coordinates.beginZ()));
         }
 
-        volumesLayoutImageExporter.exportLayout(splittedVolumes, structureVolume.getWidth(), structureVolume.getLength(), file.getAbsolutePath() + "-layout.png");
+        volumesLayoutImageExporter.exportLayout(splittedVolumes, structureVolume.getWidth(), structureVolume.getLength(), structureVolume.getHeight(), file.getAbsolutePath() + "-layout.png", progressCallback);
 
 
         int counter = 0;
