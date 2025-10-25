@@ -46,3 +46,5 @@ schematics/*
 !/schematics/.gitignore
 
 ./idea
+
+./latest.log
