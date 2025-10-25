@@ -1,6 +1,7 @@
 package com.carilt01.schematictonbt.loaders;
 
 import com.carilt01.schematictonbt.Block;
+import com.carilt01.schematictonbt.Main;
 import com.carilt01.schematictonbt.Volume;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -9,9 +10,7 @@ import net.querz.nbt.io.NBTUtil;
 import net.querz.nbt.io.NamedTag;
 import net.querz.nbt.tag.CompoundTag;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 public class SchematicFileLoader {
@@ -26,9 +25,10 @@ public class SchematicFileLoader {
         System.out.println("Loading block types...");
         Gson gson = new Gson();
 
-        try (FileReader fileReader = new FileReader("blocks.json")) {
+        try (InputStream inputStream = Main.class.getResourceAsStream("/blocks.json")) {
             // Parse the top-level object
-            JsonObject root = gson.fromJson(fileReader, JsonObject.class);
+            assert inputStream != null;
+            JsonObject root = gson.fromJson(new InputStreamReader(inputStream), JsonObject.class);
             JsonObject blocks = root.getAsJsonObject("blocks");
 
             for (Map.Entry<String, JsonElement> entry : blocks.entrySet()) {
