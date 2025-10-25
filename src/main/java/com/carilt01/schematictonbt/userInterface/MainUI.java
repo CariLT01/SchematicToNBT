@@ -1,17 +1,20 @@
 package com.carilt01.schematictonbt.userInterface;
 
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.LoggerContext;
 import com.carilt01.schematictonbt.Callback;
 import com.formdev.flatlaf.FlatLightLaf;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.lang.annotation.Native;
 
 public class MainUI {
 
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(MainUI.class);
     private JFrame frame;
     private JProgressBar progressBar;
     private JTextArea logArea;
@@ -33,7 +36,7 @@ public class MainUI {
         try {
             UIManager.setLookAndFeel(new FlatLightLaf());
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("An error occurred while setting look and feel: ", e);
         }
 
         frame = new JFrame("Schematic to NBT");
@@ -76,6 +79,15 @@ public class MainUI {
         logArea.setEditable(false);
         logArea.setLineWrap(true);
         logArea.setWrapStyleWord(true);
+
+        LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
+        Logger rootLogger = context.getLogger(Logger.ROOT_LOGGER_NAME); // Root logger
+
+        TextAreaAppender appender = new TextAreaAppender(logArea, 200);
+        appender.setContext(context);
+        appender.start();
+        rootLogger.addAppender(appender);
+
 
         JScrollPane scrollPane = new JScrollPane(logArea);
         scrollPane.setPreferredSize(new Dimension(250, 250));

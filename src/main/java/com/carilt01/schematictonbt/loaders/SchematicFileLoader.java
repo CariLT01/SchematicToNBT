@@ -9,20 +9,23 @@ import com.google.gson.JsonObject;
 import net.querz.nbt.io.NBTUtil;
 import net.querz.nbt.io.NamedTag;
 import net.querz.nbt.tag.CompoundTag;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.*;
 
 public class SchematicFileLoader {
 
-    private Map<String, String> mappedBlockTypes = new HashMap<>();
+    private final Map<String, String> mappedBlockTypes = new HashMap<>();
+    private static final Logger logger = LoggerFactory.getLogger(SchematicFileLoader.class);
 
     public SchematicFileLoader() {
         this.loadBlockTypes();
     }
 
     private void loadBlockTypes() {
-        System.out.println("Loading block types...");
+        logger.info("Loading block types...");
         Gson gson = new Gson();
 
         try (InputStream inputStream = Main.class.getResourceAsStream("/blocks.json")) {
@@ -39,7 +42,7 @@ public class SchematicFileLoader {
                 mappedBlockTypes.put(key, value);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("An error occurred while loading block types: ", e);
         }
     }
 

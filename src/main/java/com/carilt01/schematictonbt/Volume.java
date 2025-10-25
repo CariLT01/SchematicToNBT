@@ -1,16 +1,20 @@
 package com.carilt01.schematictonbt;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.*;
 
 public class Volume implements Iterable<Block> {
 
-    private short[] blockData;
-    private Map<Block, Integer> paletteMap;
-    private Map<Integer, Block> paletteReverseMap;
+    private final short[] blockData;
+    private final Map<Block, Integer> paletteMap;
+    private final Map<Integer, Block> paletteReverseMap;
     private final int width;
     private final int height;
     private final int length;
     private int paletteCounter;
+    private static final Logger logger = LoggerFactory.getLogger(Volume.class);
 
     private boolean hasBeenManipulated = false;
 
@@ -140,7 +144,7 @@ public class Volume implements Iterable<Block> {
         int sizeY = endY - startY;
         int sizeZ = endZ - startZ;
 
-        System.out.println("Requesting a volume of size: " + sizeX + " " + sizeY + " " + sizeZ);
+        logger.info("Requesting a volume of size: {} {} {}", sizeX, sizeY, sizeZ);
 
         if (sizeX > width || sizeY > height || sizeZ > length) {
             throw new IndexOutOfBoundsException("Attempt to collect blocks in area where area is bigger than the volume itself");
@@ -150,14 +154,14 @@ public class Volume implements Iterable<Block> {
             throw new IndexOutOfBoundsException(("EndX/Y/Z bigger than volume X/Y/Z"));
         }
 
-        System.out.println("End of: " + endX + " " + endY + " " + endZ);
+        logger.info("End of: {} {} {}", endX, endY, endZ);
 
         for (int y = startY; y  < endY; y++) {
             for (int z = startZ; z < endZ; z++) {
                 for (int x = startX; x < endX; x++) {
                     Block blockAtPos = this.getBlockAt(x, y, z);
                     if (blockAtPos == null) {
-                        System.out.println("Warn: copying block failed at " + x + " "  + y  + " " + z);
+                        logger.warn("Warn: copying block failed at {} {} {}", x, y, z);
                     }
 
 

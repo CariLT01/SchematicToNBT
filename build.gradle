@@ -16,6 +16,8 @@ dependencies {
     implementation 'com.github.Querz:NBT:6.1'
     implementation 'com.google.code.gson:gson:2.10.1'
     implementation 'com.formdev:flatlaf:3.1'
+    implementation 'ch.qos.logback:logback-classic:1.4.11'
+    implementation 'org.slf4j:slf4j-api:2.0.9'
 
 }
 
@@ -31,4 +33,5 @@ jar {
     from {
         configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }

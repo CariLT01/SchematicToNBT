@@ -6,6 +6,8 @@ import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.IntTag;
 import net.querz.nbt.tag.ListTag;
 import net.querz.nbt.tag.Tag;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,6 +16,9 @@ import java.nio.file.Path;
 import java.util.*;
 
 public class NBTExporter {
+
+    private static final Logger logger = LoggerFactory.getLogger(NBTExporter.class);
+
     public NBTExporter() {
 
     }
@@ -78,7 +83,7 @@ public class NBTExporter {
                     Block blockAtPos = structureVolume.getBlockAt(x, y, z);
                     //int blockHash = blockAtPos.hashCode();
                     if (!blockPaletteIndex.containsKey(blockAtPos)) {
-                        System.out.println("Warn: Block not found during serialization");
+                        logger.warn("Warn: Block not found during serialization");
                         continue;
                     }
                     int paletteIndex = blockPaletteIndex.get(blockAtPos);
@@ -101,7 +106,7 @@ public class NBTExporter {
             }
         }
 
-        System.out.println("Number of blocks serialized: " + numberOfBlocksSerialized);
+        logger.info("Number of blocks serialized: {}", numberOfBlocksSerialized);
 
         ListTag<IntTag> sizeBinaryTag = new ListTag<>(IntTag.class);
 
@@ -124,7 +129,7 @@ public class NBTExporter {
         NBTUtil.write(root, outputFile);
         //BinaryTagIO.writer().write(root, outputFile.toPath(), BinaryTagIO.Compression.GZIP);
 
-        System.out.println("Saved structure NBT: " + outputFile.getAbsolutePath());
+        logger.info("Saved structure NBT: {}", outputFile.getAbsolutePath());
 
         if (WRITE_GIVE_LIST) {
             VolumeGenerateGiveList giveListGenerator = new VolumeGenerateGiveList();
@@ -134,7 +139,7 @@ public class NBTExporter {
             Path filePath = Path.of("schematics/" + outputFile.getName() + "-giveList.txt");
             Files.write(filePath, giveList);
 
-            System.out.println("Wrote give list to: " + filePath.toAbsolutePath());
+            logger.info("Wrote give list to: {}", filePath.toAbsolutePath());
         }
     }
 }

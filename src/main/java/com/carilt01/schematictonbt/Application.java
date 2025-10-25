@@ -2,13 +2,16 @@ package com.carilt01.schematictonbt;
 
 import com.carilt01.schematictonbt.userInterface.IntegerInput;
 import com.carilt01.schematictonbt.userInterface.MainUI;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class Application {
 
+
+    private static final Logger logger = LoggerFactory.getLogger(Application.class);
     private final MainUI mainUI;
-    private SchematicToNBTConverter converter;
+    private final SchematicToNBTConverter converter;
 
     public Application() {
 
@@ -17,7 +20,7 @@ public class Application {
         ProgressCallback progressCallback = new ProgressCallback() {
             @Override
             public void update(float progress, String text) {
-                System.out.println("Progress update:" + progress);
+                logger.info("Progress update:{}", progress);
                 mainUI.setProgress(progress);
                 mainUI.setProgressText(text);
             }
@@ -38,7 +41,7 @@ public class Application {
                     try {
                         converter.convertFile(filePath, true, maxVolumeSize * 1024, progressCallback);
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        logger.error("An error occurred while saving file: ", e);
                         mainUI.showError(e.getMessage());
 
 

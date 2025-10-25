@@ -1,11 +1,15 @@
 package com.carilt01.schematictonbt;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class VolumeSplitter {
     private final VolumeMeasurementSerializer vms = new VolumeMeasurementSerializer();
+    private static final Logger logger = LoggerFactory.getLogger(VolumeSplitter.class);
 
     public VolumeSplitter() {
 
@@ -42,26 +46,23 @@ public class VolumeSplitter {
                 int curXChunk = xChunkForColumn;
                 int curZChunk = zChunkForRow;
 
-                int xEnd = 0;
-                int zEnd = 0;
+                int xEnd;
+                int zEnd;
 
                 // Reduce curXChunk/curZChunk until serialized size fits
                 while (true) {
                     xEnd = Math.min(xStart + curXChunk, volume.getWidth());
                     zEnd = Math.min(zStart + curZChunk, volume.getLength());
 
-                    System.out.print("Getting size...");
+                    logger.info("Getting size...");
                     Volume areaVolume = volume.collectBlocksInArea(xStart, 0, zStart, xEnd, yEnd, zEnd);
-                    System.out.print("\rSerializing and estimating size...");
+                    logger.info("Serializing and estimating size...");
                     byte[] nbtData = vms.serializeVolume(areaVolume);
 
-                    areaVolume = null;
-
                     int compressedSize = nbtData.length;
-                    nbtData = null;
                     if (compressedSize < maxVolumeSize) {
                         xChunkForColumn = curXChunk; // Save the smaller, valid width
-                        System.out.print("\rReached a size of: " + Math.round((float) compressedSize / 1024) + " KB");
+                        logger.info("Reached a size of: {} KB", Math.round((float) compressedSize / 1024));
                         break;
                     }
 
@@ -84,7 +85,7 @@ public class VolumeSplitter {
 
                 progressCallback.update((float) blocksProcessed / totalBlocks, "Splitting volume...");
 
-                System.out.println("Blocks processed progress: " + Math.round((float) blocksProcessed / totalBlocks * 100) + "%");
+                logger.info("Blocks processed progress: {}%", Math.round((float) blocksProcessed / totalBlocks * 100));
 
                 // Advance zStart by the final chunk used for this piece
                 zStart += Math.min(curZChunk, zEnd - zStart);

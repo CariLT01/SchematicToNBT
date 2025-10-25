@@ -5,6 +5,8 @@ import net.querz.nbt.io.NamedTag;
 import net.querz.nbt.tag.CompoundTag;
 import net.querz.nbt.tag.IntTag;
 import net.querz.nbt.tag.ListTag;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -14,6 +16,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.GZIPOutputStream;
 
 public class VolumeMeasurementSerializer {
+    
+    private static final Logger logger = LoggerFactory.getLogger(VolumeMeasurementSerializer.class);
+    
     public VolumeMeasurementSerializer() {
 
     }
@@ -23,10 +28,10 @@ public class VolumeMeasurementSerializer {
 
      */
     public byte[] serializeVolume(Volume volume) throws IOException {
-        System.out.print("\rPreparing...");
+        logger.info("Preparing...");
         Map<Block, Integer> palette = new HashMap<>();
 
-        System.out.println("\rCreating palette...");
+        logger.info("Creating palette...");
 
         //Map<Block, Integer> palette = new HashMap<>();
         AtomicInteger paletteIndex = new AtomicInteger(0);
@@ -38,7 +43,7 @@ public class VolumeMeasurementSerializer {
 
         ListTag<CompoundTag> blockListTag = new ListTag<>(CompoundTag.class);
 
-        System.out.println("\rBuilding volume...");
+        logger.info("Building volume...");
 
         // --- 2. Build NBT blocks efficiently ---
 
@@ -80,14 +85,14 @@ public class VolumeMeasurementSerializer {
             return new byte[256 * 1024];
         }
 
-        System.out.println("Number of blocks serialized:" + numberOfBlocksSerialized + "\n\n");
+        logger.info("Number of blocks serialized:{}", numberOfBlocksSerialized);
 
         CompoundTag root_ct = new CompoundTag();
         root_ct.put("blocks", blockListTag);
 
         NamedTag root = new NamedTag("root", root_ct);
 
-        System.out.print("\rSerializing...");
+        logger.info("Serializing...");
         byte[] nbtData;
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
              GZIPOutputStream gzipOut = new GZIPOutputStream(baos);
