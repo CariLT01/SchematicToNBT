@@ -15,7 +15,7 @@ public class VolumeGenerateGiveList {
 
         Map<String, Integer> giveMap = new HashMap<>();
 
-        for (Block block : volume.getBlocks()) {
+        for (Block block : volume) {
 
             if (block.getBlockName().startsWith("minecraft:air")) continue;
             if (!giveMap.containsKey(block.getBlockName())) {

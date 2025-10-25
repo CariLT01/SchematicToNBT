@@ -11,7 +11,7 @@ public class VolumeSplitter {
 
     }
 
-    public List<VolumeBlockEntry> splitVolume(Volume volume, ProgressCallback progressCallback, int maxVolumeSize) throws IOException {
+    public List<VolumeCoords> splitVolume(Volume volume, ProgressCallback progressCallback, int maxVolumeSize) throws IOException {
         final int initialXGuess = 2048;
         final int initialZGuess = 2048;
         //final int MAX_VOLUME_SIZE = 246 * 1024;
@@ -24,7 +24,7 @@ public class VolumeSplitter {
         int xStart = 0;
         int yEnd = volume.getHeight();
 
-        List<VolumeBlockEntry> completedVolumes = new ArrayList<>();
+        List<VolumeCoords> completedVolumes = new ArrayList<>();
 
         progressCallback.update(0, "Splitting volume...");
 
@@ -55,7 +55,10 @@ public class VolumeSplitter {
                     System.out.print("\rSerializing and estimating size...");
                     byte[] nbtData = vms.serializeVolume(areaVolume);
 
+                    areaVolume = null;
+
                     int compressedSize = nbtData.length;
+                    nbtData = null;
                     if (compressedSize < maxVolumeSize) {
                         xChunkForColumn = curXChunk; // Save the smaller, valid width
                         System.out.print("\rReached a size of: " + Math.round((float) compressedSize / 1024) + " KB");
@@ -74,10 +77,10 @@ public class VolumeSplitter {
                 }
 
                 // Export using the final xEnd/zEnd determined above
-                Volume areaVolume = volume.collectBlocksInArea(xStart, 0, zStart, xEnd, yEnd, zEnd);
-                completedVolumes.add(new VolumeBlockEntry(areaVolume, xStart, zStart));
+                //Volume areaVolume = volume.collectBlocksInArea(xStart, 0, zStart, xEnd, yEnd, zEnd);
+                completedVolumes.add(new VolumeCoords(xStart, 0, zStart, xEnd, yEnd, zEnd));
 
-                blocksProcessed += areaVolume.getWidth() * areaVolume.getHeight() * areaVolume.getLength();
+                blocksProcessed += (xEnd - xStart) * (yEnd) * (zEnd - zStart);
 
                 progressCallback.update((float) blocksProcessed / totalBlocks, "Splitting volume...");
 
