@@ -134,7 +134,9 @@ public class SchemFileLoader {
         int dataVersion = tag.getInt("DataVersion");
 
         if (Config.DATA_VERSION < dataVersion) {
-            callback.showWarning(String.format("Warning: Schematic uses a newer version\nSchematic: %d\nYour version: %d\n\nExpect missing blocks.", dataVersion, Config.DATA_VERSION));
+            callback.showWarning(String.format("2 Warnings:\n---\nThis schematic uses the third (3) version of the schematic protocol. The Schematic V3 loader is experimental and may produce broken results.\n---\nSchematic uses a newer Minecraft data version\nSchematic: %d\nYour version: %d\n\nExpect missing blocks.", dataVersion, Config.DATA_VERSION));
+        } else {
+            callback.showWarning("Warning:\nThis schematic uses the third (3) version of the schematic protocol. The Schematic V3 loader is experimental and may produce broken results.");
         }
 
 
