@@ -5,6 +5,8 @@ import com.carilt01.schematictonbt.userInterface.MainUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.*;
+
 
 public class Application {
 
@@ -20,9 +22,15 @@ public class Application {
         ProgressCallback progressCallback = new ProgressCallback() {
             @Override
             public void update(float progress, String text) {
-                logger.info("Progress update:{}", progress);
+                //logger.info("Progress update:{}", progress);
                 mainUI.setProgress(progress);
                 mainUI.setProgressText(text);
+            }
+            @Override
+            public void showWarning(String message) {
+                SwingUtilities.invokeLater(() -> {
+                    mainUI.showWarning(message);
+                });
             }
         };
 

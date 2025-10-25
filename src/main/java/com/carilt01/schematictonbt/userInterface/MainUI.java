@@ -157,6 +157,15 @@ public class MainUI {
         ));
 
     }
+    public void showWarning(String errorMessage) {
+        SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(
+                frame,
+                errorMessage,
+                "Schematic to NBT",
+                JOptionPane.WARNING_MESSAGE
+        ));
+
+    }
 
     public void setProgressText(String text) {
         SwingUtilities.invokeLater(() -> progressText.setText(text));

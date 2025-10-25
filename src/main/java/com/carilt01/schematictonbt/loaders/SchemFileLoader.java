@@ -1,6 +1,8 @@
 package com.carilt01.schematictonbt.loaders;
 
 import com.carilt01.schematictonbt.Block;
+import com.carilt01.schematictonbt.Config;
+import com.carilt01.schematictonbt.ProgressCallback;
 import com.carilt01.schematictonbt.Volume;
 import net.querz.nbt.io.NBTUtil;
 import net.querz.nbt.io.NamedTag;
@@ -24,13 +26,16 @@ public class SchemFileLoader {
     }
 
 
-    public Volume loadSchemV2ToVolume(CompoundTag tag) {
+    public Volume loadSchemV2ToVolume(CompoundTag tag, ProgressCallback callback) {
 
         short height = tag.getShort("Height");
         short length = tag.getShort("Length");
         short width = tag.getShort("Width");
+        int dataVersion = tag.getInt("DataVersion");
 
-
+        if (Config.DATA_VERSION < dataVersion) {
+            callback.showWarning(String.format("Warning: Schematic uses a newer version\nSchematic: %d\nYour version: %d\n\nExpect missing blocks.", dataVersion, Config.DATA_VERSION));
+        }
 
         Volume schemVolume = new Volume(width, height, length);
 
@@ -72,6 +77,9 @@ public class SchemFileLoader {
         }
 
         for (int y = 0; y < height; y++) {
+
+            callback.update((float) y / height, "Loading schem file V2");
+
             for (int z = 0; z < length; z++) {
                 for (int x = 0; x < width; x++) {
 
@@ -111,7 +119,7 @@ public class SchemFileLoader {
         return result;
     }
 
-    public Volume loadSchemV3ToVolume(CompoundTag tag) {
+    public Volume loadSchemV3ToVolume(CompoundTag tag, ProgressCallback callback) {
 
         CompoundTag schematicTag = tag.getCompoundTag("Schematic");
         if (schematicTag == null) {
@@ -123,6 +131,11 @@ public class SchemFileLoader {
         short length = tag.getShort("Length");
         short width = tag.getShort("Width");
 
+        int dataVersion = tag.getInt("DataVersion");
+
+        if (Config.DATA_VERSION < dataVersion) {
+            callback.showWarning(String.format("Warning: Schematic uses a newer version\nSchematic: %d\nYour version: %d\n\nExpect missing blocks.", dataVersion, Config.DATA_VERSION));
+        }
 
 
         Volume schemVolume = new Volume(width, height, length);
@@ -169,6 +182,8 @@ public class SchemFileLoader {
         int[] offset = new int[]{0}; // pointer to current byte
 
         for (int y = 0; y < height; y++) {
+            callback.update((float) y / height, "Loading schem file V3");
+
             for (int z = 0; z < length; z++) {
                 for (int x = 0; x < width; x++) {
                     int paletteIndex = readVarInt(blocksDataOriginal, offset);
@@ -185,7 +200,7 @@ public class SchemFileLoader {
         return schemVolume;
     }
 
-    public Volume loadSchemToVolume(File file) throws IOException {
+    public Volume loadSchemToVolume(File file, ProgressCallback callback) throws IOException {
         //CompoundBinaryTag tag = BinaryTagIO.reader().read(file.toPath(), BinaryTagIO.Compression.GZIP);
         NamedTag tag_root = NBTUtil.read(file);
         CompoundTag tag = (CompoundTag) tag_root.getTag();
@@ -206,10 +221,13 @@ public class SchemFileLoader {
 
         if (versionTag.asInt() == 2) {
             logger.info("Load schem file version 2");
-            return this.loadSchemV2ToVolume(tag);
+            return this.loadSchemV2ToVolume(tag, callback);
         } else if (versionTag.asInt() == 3) {
             logger.info("Load schem file version 3");
-            return this.loadSchemV3ToVolume(tag);
+            logger.warn("--- WARNING ---");
+            logger.warn("Schematic V3 Version detected!");
+            logger.warn("The v3 loader is extremely unstable and produces inaccurate results!");
+            return this.loadSchemV3ToVolume(tag, callback);
         } else {
             throw new IllegalArgumentException("Unsupported schem version: " + versionTag);
         }

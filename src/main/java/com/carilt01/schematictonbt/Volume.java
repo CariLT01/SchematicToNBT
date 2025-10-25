@@ -13,6 +13,7 @@ public class Volume implements Iterable<Block> {
     private final int width;
     private final int height;
     private final int length;
+    private int dataVersion = 3465;
     private int paletteCounter;
     private static final Logger logger = LoggerFactory.getLogger(Volume.class);
 
@@ -39,6 +40,13 @@ public class Volume implements Iterable<Block> {
     public int getLength() {
         return this.length;
     }
+    public void setDataVersion(int version) {
+        this.dataVersion = version;
+    }
+    public int getDataVersion() {
+        return this.dataVersion;
+    }
+
 
     public void setBlock(int x, int y, int z, Block newBlock) {
         int index = (y * width * length) + (z * width) + x;

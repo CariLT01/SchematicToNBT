@@ -24,13 +24,13 @@ public class SchematicToNBTConverter {
         volumesLayoutImageExporter = new VolumesLayoutImageExporter();
     }
 
-    public Volume loadSchematicFile(File file) throws IOException {
+    public Volume loadSchematicFile(File file, ProgressCallback callback) throws IOException {
 
         String filePath = file.getAbsolutePath();
         Volume structureVolume;
 
         if (filePath.endsWith(".schem")) {
-            structureVolume = schemFileLoader.loadSchemToVolume(file);
+            structureVolume = schemFileLoader.loadSchemToVolume(file, callback);
         } else if (filePath.endsWith(".schematic")) {
             structureVolume = schematicFileLoader.loadSchematicToVolume(file);
         } else {
@@ -42,7 +42,7 @@ public class SchematicToNBTConverter {
 
     public void convertFile(String filePath, boolean shouldSplit, int maxVolumeSize, ProgressCallback progressCallback) throws IOException {
         File file = new File(filePath);
-        Volume structureVolume = this.loadSchematicFile(file);
+        Volume structureVolume = this.loadSchematicFile(file, progressCallback);
 
 
         if (!shouldSplit) {
