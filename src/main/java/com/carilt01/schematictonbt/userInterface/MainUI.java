@@ -3,6 +3,8 @@ package com.carilt01.schematictonbt.userInterface;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import com.carilt01.schematictonbt.Callback;
+import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.FlatIntelliJLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import org.slf4j.LoggerFactory;
 
@@ -22,6 +24,7 @@ public class MainUI {
     private JSpinner maximumKbPerFileSpinner;
 
     private File schematicSelectedFile;
+    private File giveListSelectedFile;
 
     private final Callback callbacks;
 
@@ -36,7 +39,7 @@ public class MainUI {
 
 
         try {
-            UIManager.setLookAndFeel(new FlatLightLaf());
+            UIManager.setLookAndFeel(new FlatIntelliJLaf());
         } catch (Exception e) {
             logger.error("An error occurred while setting look and feel: ", e);
         }
@@ -164,8 +167,63 @@ public class MainUI {
         ///  --- Execute give list tab ---
         JPanel executeGiveListPanel = new JPanel();
         executeGiveListPanel.setLayout(new BoxLayout(executeGiveListPanel, BoxLayout.Y_AXIS));
+        JScrollPane executeGiveListScroll = new JScrollPane(executeGiveListPanel);
 
-        tabbedPane.add("Execute give list", executeGiveListPanel);
+        ///  --- Title ---
+        JLabel title2  = new JLabel("Execute give list");
+        title2.setFont(new Font("Roboto", Font.BOLD, 18));
+        title2.setAlignmentX(Component.CENTER_ALIGNMENT);
+        executeGiveListPanel.add(title2);
+
+        ///  --- Wrapper panel ---
+        JPanel wrapperPanel2 = new JPanel();
+        wrapperPanel2.setLayout(new BoxLayout(wrapperPanel2, BoxLayout.Y_AXIS));
+        wrapperPanel2.setBorder(new EmptyBorder(0, 15, 0, 15));
+
+        ///  --- File input ---
+        JPanel fileInputPanel = new JPanel();
+        fileInputPanel.setLayout(new BoxLayout(fileInputPanel, BoxLayout.X_AXIS));
+
+        JLabel fileInputLabel = new JLabel("No file chosen");
+        JButton giveListInputButton = new JButton("Choose file");
+        giveListInputButton.addActionListener(e -> {
+            giveListSelectedFile = nativeFileChooser.chooseFile();
+            if (giveListSelectedFile != null) {
+                fileInputLabel.setText("<html><b>Chosen file</b>: " + giveListSelectedFile.getName() + "</html>");
+            }
+
+        });
+
+        fileInputPanel.add(fileInputLabel);
+        fileInputPanel.add(Box.createHorizontalStrut(5));
+        fileInputPanel.add(giveListInputButton);
+
+        wrapperPanel2.add(ComponentWrapper.wrapComponent(fileInputPanel));
+        executeGiveListPanel.add(wrapperPanel2);
+        executeGiveListPanel.add(Box.createVerticalStrut(15));
+
+        ///  --- Instructions --
+        JLabel instructions = new JLabel("<html><b>Instructions</b><br>Right arrow to type next. Left arrow to go back. Down arrow to retype.</html>");
+        wrapperPanel2.add(ComponentWrapper.wrapComponent(instructions));
+
+        ///  --- Execute button ---
+        JButton executeGiveListButton = new JButton("Execute list");
+        executeGiveListButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        executeGiveListButton.addActionListener(e -> {
+            if (giveListSelectedFile == null) {
+                this.showError("You must select file to execute!");
+                return;
+            }
+
+            callbacks.executeGiveList(giveListSelectedFile.getAbsolutePath());
+        });
+
+
+        executeGiveListPanel.add(executeGiveListButton);
+
+
+
+        tabbedPane.add("Execute give list", executeGiveListScroll);
 
 
 

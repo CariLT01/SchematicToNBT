@@ -12,6 +12,7 @@ public class Main {
         try {
             logger.info("Hello and welcome buddy!");
 
+
             Application app = new Application();
             app.run();
 

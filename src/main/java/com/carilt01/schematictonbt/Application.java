@@ -17,6 +17,7 @@ public class Application {
 
     public Application() {
 
+        RobotTyper.initializeHook();
         converter = new SchematicToNBTConverter();
 
         ProgressCallback progressCallback = new ProgressCallback() {
@@ -60,6 +61,20 @@ public class Application {
 
 
 
+            }
+            @Override
+            public void executeGiveList(String filePath) {
+                new Thread(() -> {
+                    mainUI.setProgressBarVisible(true);
+                    mainUI.setProgressTextVisible(true);
+
+                    GiveListExecutor executor = new GiveListExecutor();
+                    try {
+                        executor.executeGiveList(filePath, progressCallback);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                }).start();
             }
 
         };
