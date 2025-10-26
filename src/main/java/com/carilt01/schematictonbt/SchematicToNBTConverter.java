@@ -32,7 +32,8 @@ public class SchematicToNBTConverter {
         if (filePath.endsWith(".schem")) {
             structureVolume = schemFileLoader.loadSchemToVolume(file, callback);
         } else if (filePath.endsWith(".schematic")) {
-            structureVolume = schematicFileLoader.loadSchematicToVolume(file);
+            callback.update(-1, "Loading schematic...");
+            structureVolume = schematicFileLoader.loadSchematicToVolume(file, callback);
         } else {
             throw new IllegalArgumentException("Invalid file type");
         }

@@ -57,12 +57,42 @@ public class VolumeSplitter {
                     zEnd = Math.min(zStart + curZChunk, volume.getLength());
 
                     logger.info("Getting size...");
-                    Volume areaVolume = volume.collectBlocksInArea(xStart, 0, zStart, xEnd, yEnd, zEnd);
+                    Volume areaVolume;
+                    SlowTaskWatcher<Volume> areaCollectionWatcher = new SlowTaskWatcher<>(3000);
+                    int finalXStart = xStart;
+                    int finalZStart = zStart;
+                    int finalXEnd = xEnd;
+                    int finalZEnd = zEnd;
+                    try {
+                        areaVolume = areaCollectionWatcher.run(
+                                () -> volume.collectBlocksInArea(finalXStart, 0, finalZStart, finalXEnd, yEnd, finalZEnd),
+                                () -> progressCallback.update(-1, "Collecting blocks...")
+                        );
+                    } catch (Exception e) {
+                        logger.error("Exception: ", e);
+                        areaVolume = new Volume(0, 0, 0);
+                    } finally {
+                        updateProgress(progressCallback, (float) blocksProcessed, totalBlocks);
+                    }
+
 
                     logger.info("Serializing and estimating size...");
                     if (areaVolume.countNonAirBlocks() < blockLimit) {
-                        byte[] nbtData = vms.serializeVolume(areaVolume, Optional.of(progressCallback));
-                        progressCallback.update((float) blocksProcessed / totalBlocks, "Splitting volume...");
+
+                        SlowTaskWatcher<byte[]> watcher = new SlowTaskWatcher<>(3000);
+
+                        byte[] nbtData;
+                        try {
+                            Volume finalAreaVolume = areaVolume;
+                            nbtData = watcher.run(
+                                    () -> vms.serializeVolume(finalAreaVolume, Optional.of(progressCallback)),
+                                    () -> progressCallback.update(-1, "Estimating size..."));
+                        } catch (Exception e) {
+                            logger.error("Error while serializing volume: ", e);
+                            nbtData = new byte[maxVolumeSize];
+                        }
+                        updateProgress(progressCallback, (float) blocksProcessed, totalBlocks);
+
 
                         int compressedSize = nbtData.length;
                         if (compressedSize < maxVolumeSize) {
@@ -92,7 +122,7 @@ public class VolumeSplitter {
 
                 blocksProcessed += (xEnd - xStart) * (yEnd) * (zEnd - zStart);
 
-                progressCallback.update((float) blocksProcessed / totalBlocks, "Splitting volume...");
+                updateProgress(progressCallback, (float) blocksProcessed, totalBlocks);
 
                 logger.info("Blocks processed progress: {}%", Math.round((float) blocksProcessed / totalBlocks * 100));
 
@@ -105,6 +135,15 @@ public class VolumeSplitter {
         }
 
         return completedVolumes;
+    }
+
+    private static void updateProgress(ProgressCallback progressCallback, float blocksProcessed, int totalBlocks) {
+        float t = blocksProcessed / totalBlocks;
+        if (t <= 1) {
+            progressCallback.update(t, "Splitting volume...");
+        } else {
+            progressCallback.update(-1, "Splitting volume...");
+        }
     }
 
 }

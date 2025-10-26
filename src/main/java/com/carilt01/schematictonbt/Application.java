@@ -38,8 +38,7 @@ public class Application {
             @Override
             public void startProcessFile(String filePath) {
 
-                IntegerInput integerInput = new IntegerInput();
-                int maxVolumeSize = integerInput.askForInt("Maximum KB per file (default: 246)");
+                int maxVolumeSize = mainUI.getMaxKbPerFileValue();
                 mainUI.setProgressBarVisible(true);
                 mainUI.setProgressTextVisible(true);
                 new Thread(() -> {

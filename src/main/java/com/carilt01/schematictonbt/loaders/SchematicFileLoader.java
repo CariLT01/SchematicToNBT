@@ -2,6 +2,7 @@ package com.carilt01.schematictonbt.loaders;
 
 import com.carilt01.schematictonbt.Block;
 import com.carilt01.schematictonbt.Main;
+import com.carilt01.schematictonbt.ProgressCallback;
 import com.carilt01.schematictonbt.Volume;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -46,11 +47,13 @@ public class SchematicFileLoader {
         }
     }
 
-    public Volume loadSchematicToVolume(File file) throws IOException {
+    public Volume loadSchematicToVolume(File file, ProgressCallback callback) throws IOException {
 
 
 
         //CompoundTag tag = BinaryTagIO.reader().read(file.toPath(), BinaryTagIO.Compression.GZIP);
+        callback.update(-1, "Reading data...");
+
         NamedTag tag_root = NBTUtil.read(file);
         CompoundTag tag = (CompoundTag) tag_root.getTag();
 
@@ -74,6 +77,9 @@ public class SchematicFileLoader {
 
 
         for (int y = 0; y < height; y++) {
+
+            callback.update((float) y / height, "Loading schematic...");
+
             for (int z = 0; z < length; z++) {
                 for (int x = 0; x < width; x++) {
                     int index = (y * width * length + z * width + x);

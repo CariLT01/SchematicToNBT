@@ -234,6 +234,9 @@ public class SchemFileLoader {
     }
 
     public Volume loadSchemToVolume(File file, ProgressCallback callback) throws IOException {
+
+        callback.update(-1, "Reading data...");
+
         //CompoundBinaryTag tag = BinaryTagIO.reader().read(file.toPath(), BinaryTagIO.Compression.GZIP);
         NamedTag tag_root = NBTUtil.read(file);
         CompoundTag tag = (CompoundTag) tag_root.getTag();
