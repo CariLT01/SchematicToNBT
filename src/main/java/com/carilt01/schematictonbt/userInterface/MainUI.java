@@ -197,7 +197,7 @@ public class MainUI {
         executeGiveListPanel.add(Box.createVerticalStrut(15));
 
         ///  --- Instructions --
-        JLabel instructions = new JLabel("<html><b>Instructions</b><br>Right arrow to type next. Left arrow to go back. Down arrow to retype.</html>");
+        JLabel instructions = new JLabel("<html><b>Instructions</b><br>Page up to type next. Page down to go back. Insert to retype.</html>");
         wrapperPanel2.add(ComponentWrapper.wrapComponent(instructions));
 
         ///  --- Execute button ---
