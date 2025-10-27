@@ -11,7 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-public class GiveListExecutor {
+public class                                                 GiveListExecutor {
     private final RobotTyper robotTyper;
     private final Logger logger = LoggerFactory.getLogger(GiveListExecutor.class);
 
@@ -36,13 +36,14 @@ public class GiveListExecutor {
         while (index < lines.size()) {
             logger.info("Waiting for keys");
             callback.update((float) (index + 1) / lines.size(), "Giving...");
-            int key = RobotTyper.waitForKeys(NativeKeyEvent.VC_RIGHT, NativeKeyEvent.VC_LEFT, NativeKeyEvent.VC_DOWN); // Numpad 3 and Numpad 1 Numpad 2
-            if (key == NativeKeyEvent.VC_RIGHT) index++;
-            if (key == NativeKeyEvent.VC_LEFT && index > 0) index--;
+            int key = RobotTyper.waitForKeys(NativeKeyEvent.VC_PAGE_UP, NativeKeyEvent.VC_PAGE_DOWN, NativeKeyEvent.VC_INSERT); // Numpad 3 and Numpad 1 Numpad 2
+            if (key == NativeKeyEvent.VC_PAGE_UP) index++;
+            if (key == NativeKeyEvent.VC_PAGE_DOWN && index > 0) index--;
             logger.info("Typing string!");
             if (index > lines.size() - 1) break;
             robotTyper.typeString("/");
             robotTyper.pasteStringViaClipboard(lines.get(index).replace("\n", ""));
+
 
         }
         callback.update(1, "Complete!");
