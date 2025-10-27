@@ -11,7 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-public class GiveListExecutor {
+public class                                                 GiveListExecutor {
     private final RobotTyper robotTyper;
     private final Logger logger = LoggerFactory.getLogger(GiveListExecutor.class);
 
@@ -43,6 +43,7 @@ public class GiveListExecutor {
             if (index > lines.size() - 1) break;
             robotTyper.typeString("/");
             robotTyper.pasteStringViaClipboard(lines.get(index).replace("\n", ""));
+
 
         }
         callback.update(1, "Complete!");

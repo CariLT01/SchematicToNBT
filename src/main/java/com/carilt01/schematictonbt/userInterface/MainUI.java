@@ -9,6 +9,7 @@ import com.formdev.flatlaf.FlatLightLaf;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.io.File;
@@ -22,6 +23,11 @@ public class MainUI {
     private JLabel progressText;
     private JLabel chooseFileLabel;
     private JSpinner maximumKbPerFileSpinner;
+
+    private JLabel previousBlockLabel;
+    private JLabel currentBlockLabel;
+    private JLabel nextBlockLabel;
+    private JTextArea giveListExecutorArea;
 
     private File schematicSelectedFile;
     private File giveListSelectedFile;
@@ -144,19 +150,7 @@ public class MainUI {
 
 
         // Convert button
-        JButton convertFileButton = new JButton("Convert");
-        convertFileButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-
-        convertFileButton.addActionListener(e -> {
-
-            if (schematicSelectedFile == null) {
-                this.showError("You must select a file before converting!");
-                return;
-            }
-
-            callbacks.startProcessFile(schematicSelectedFile.getAbsolutePath());
-        });
+        JButton convertFileButton = getJButton();
 
         schematicConverterTabPanel.add(title);
         schematicConverterTabPanel.add(wrapperPanel);
@@ -217,9 +211,58 @@ public class MainUI {
 
             callbacks.executeGiveList(giveListSelectedFile.getAbsolutePath());
         });
-
-
         executeGiveListPanel.add(executeGiveListButton);
+
+        ///  --- Give list text area ---
+
+        giveListExecutorArea = new JTextArea();
+        giveListExecutorArea.setEditable(false);
+        giveListExecutorArea.setMaximumSize(new Dimension(200, 200));
+
+        JScrollPane giveListScrollable = new JScrollPane(giveListExecutorArea);
+        giveListScrollable.setPreferredSize(new Dimension(250, 250));
+        giveListScrollable.setMaximumSize(new Dimension(600, 250));
+
+        executeGiveListPanel.add(giveListScrollable);
+
+        ///  -- List summary ---
+        JPanel listSummary = new JPanel(new GridBagLayout());
+        listSummary.setAlignmentX(Component.CENTER_ALIGNMENT);
+        listSummary.setBorder(new RoundedLineBorder(Color.LIGHT_GRAY, 1, 8));
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(2, 5, 2, 5); // small padding
+        gbc.gridy = 0;
+
+// Previous
+        previousBlockLabel = new JLabel("stone_block");
+        previousBlockLabel.setFont(new Font("Roboto", Font.PLAIN, 12));
+        gbc.gridx = 0;
+        gbc.anchor = GridBagConstraints.WEST;
+        listSummary.add(previousBlockLabel, gbc);
+
+// Current
+        currentBlockLabel = new JLabel("grass_block");
+        currentBlockLabel.setFont(new Font("Roboto", Font.BOLD, 16));
+        gbc.gridx = 1;
+        gbc.weightx = 1.0;
+        gbc.anchor = GridBagConstraints.CENTER;
+        currentBlockLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        listSummary.add(currentBlockLabel, gbc);
+
+// Next
+        nextBlockLabel = new JLabel("dirt_block");
+        nextBlockLabel.setFont(new Font("Roboto", Font.PLAIN, 12));
+        gbc.gridx = 2;
+        gbc.anchor = GridBagConstraints.EAST;
+        listSummary.add(nextBlockLabel, gbc);
+
+        listSummary.setPreferredSize(new Dimension(200, listSummary.getPreferredSize().height));
+
+        JPanel wrappedListSummary = ComponentWrapper.wrapComponentCenter(listSummary);
+        wrappedListSummary.setMaximumSize(new Dimension(500, listSummary.getPreferredSize().height));
+        executeGiveListPanel.add(wrappedListSummary);
+
 
 
 
@@ -234,6 +277,23 @@ public class MainUI {
 
 
 
+    }
+
+    private JButton getJButton() {
+        JButton convertFileButton = new JButton("Convert");
+        convertFileButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        convertFileButton.putClientProperty("JButton.buttonType", "default"); // ← primary button
+
+        convertFileButton.addActionListener(e -> {
+
+            if (schematicSelectedFile == null) {
+                this.showError("You must select a file before converting!");
+                return;
+            }
+
+            callbacks.startProcessFile(schematicSelectedFile.getAbsolutePath());
+        });
+        return convertFileButton;
     }
 
     private static JScrollPane getJScrollPane() {
@@ -305,6 +365,19 @@ public class MainUI {
 
     public int getMaxKbPerFileValue() {
         return (Integer) this.maximumKbPerFileSpinner.getValue();
+    }
+
+    public void setPreviousBlockLabel(String text) {
+        previousBlockLabel.setText(text);
+    }
+    public void setCurrentBlockLabel(String text) {
+        currentBlockLabel.setText(text);
+    }
+    public void setNextBlockLabel(String text) {
+        nextBlockLabel.setText(text);
+    }
+    public void setGiveListExecutorArea(String text) {
+        giveListExecutorArea.setText(text);
     }
 
 }

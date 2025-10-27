@@ -27,4 +27,19 @@ public class ComponentWrapper {
 
         return wrapper;
     }
+
+    public static JPanel wrapComponentCenter(JComponent component) {
+        JPanel wrapper = new JPanel();
+        wrapper.setLayout(new BorderLayout());   // Use BorderLayout to allow left alignment
+        wrapper.add(component, BorderLayout.CENTER); // Put content to the left
+        wrapper.setOpaque(false);
+        //wrapper.setBorder(new EmptyBorder(5, 0, 5, 0));
+
+        // Make wrapper height tight around content
+        Dimension preferred = component.getPreferredSize();
+        wrapper.setMaximumSize(new Dimension(Integer.MAX_VALUE, preferred.height));
+        wrapper.setPreferredSize(new Dimension(preferred.width, preferred.height));
+
+        return wrapper;
+    }
 }
