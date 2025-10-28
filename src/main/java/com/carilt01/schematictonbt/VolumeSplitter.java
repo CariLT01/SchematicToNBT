@@ -16,7 +16,7 @@ public class VolumeSplitter {
 
     }
 
-    public List<VolumeCoords> splitVolume(Volume volume, ProgressCallback progressCallback, int maxVolumeSize) throws IOException {
+    public List<VolumeCoords> splitVolume(Volume volume, ProgressCallback progressCallback, int maxVolumeSize, float quality) throws IOException {
         final int initialXGuess = 2048;
         final int initialZGuess = 2048;
         final int blockLimit = 25_000_000;
@@ -107,9 +107,9 @@ public class VolumeSplitter {
 
                     // Shrink the axis more likely to reduce data first (heuristic)
                     if (curXChunk >= curZChunk && curXChunk > 1) {
-                        curXChunk = Math.max(1, curXChunk / 2);
+                        curXChunk = (int) Math.ceil(Math.max(1, curXChunk / quality));
                     } else if (curZChunk > 1) {
-                        curZChunk = Math.max(1, curZChunk / 2);
+                        curZChunk = (int) Math.ceil(Math.max(1, curZChunk / quality));
                     } else {
                         // both are 1 and still too big — cannot proceed
                         throw new IOException("Single-block chunk exceeds MAX_VOLUME_SIZE");
