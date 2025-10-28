@@ -32,6 +32,10 @@ public class MainUI {
     private File schematicSelectedFile;
     private File giveListSelectedFile;
 
+    public final LabeledOption defaultQualityOption = new LabeledOption("Default Quality", "Balanced Adaptive Splitter – Balances speed and quality");
+    public final LabeledOption enhancedQualityOption = new LabeledOption("High Precision", "Precise Adaptive Splitter – Higher quality results but slower speed. Results may vary.");
+    public LabeledComboBox qualityComboBox;
+
     private final Callback callbacks;
 
     public MainUI(Callback callbacks) {
@@ -147,6 +151,17 @@ public class MainUI {
         maximumKbPerFilePanel.add(maximumKbPerFileSpinner);
         wrapperPanel.add(ComponentWrapper.wrapComponent(maximumKbPerFilePanel));
         wrapperPanel.add(Box.createVerticalStrut(5));
+        // Balanced, fast, precise combo box
+
+        LabeledOption[] options = {
+                defaultQualityOption,
+                enhancedQualityOption
+        };
+
+        qualityComboBox = new LabeledComboBox(options);
+
+        wrapperPanel.add(ComponentWrapper.wrapComponent(qualityComboBox));
+
 
 
         // Convert button
@@ -379,6 +394,11 @@ public class MainUI {
     public void setGiveListExecutorArea(String text) {
         giveListExecutorArea.setText(text);
     }
+
+    public LabeledComboBox getQualityComboBox() {
+        return this.qualityComboBox;
+    }
+
 
 }
 

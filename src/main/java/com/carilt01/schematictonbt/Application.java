@@ -1,6 +1,7 @@
 package com.carilt01.schematictonbt;
 
 import com.carilt01.schematictonbt.userInterface.IntegerInput;
+import com.carilt01.schematictonbt.userInterface.LabeledOption;
 import com.carilt01.schematictonbt.userInterface.MainUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,12 +43,21 @@ public class Application {
                 int maxVolumeSize = mainUI.getMaxKbPerFileValue();
                 mainUI.setProgressBarVisible(true);
                 mainUI.setProgressTextVisible(true);
+
+                float quality;
+                LabeledOption selectedOption = (LabeledOption) mainUI.getQualityComboBox().getSelectedItem();
+                if (selectedOption == mainUI.enhancedQualityOption) {
+                    quality = 1.1f;
+                } else {
+                    quality = 2;
+                }
+
                 new Thread(() -> {
 
                     progressCallback.update(0, "Loading...");
 
                     try {
-                        converter.convertFile(filePath, true, maxVolumeSize * 1024, progressCallback);
+                        converter.convertFile(filePath, true, maxVolumeSize * 1024, progressCallback, quality);
                     } catch (Exception e) {
                         logger.error("An error occurred while saving file: ", e);
                         mainUI.showError(e.getMessage());
