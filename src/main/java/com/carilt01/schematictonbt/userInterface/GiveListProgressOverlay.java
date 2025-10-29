@@ -1,6 +1,8 @@
 package com.carilt01.schematictonbt.userInterface;
 
 import com.formdev.flatlaf.FlatIntelliJLaf;
+import com.sun.jna.Pointer;
+import com.sun.jna.platform.win32.WinDef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,10 +12,14 @@ import javax.swing.text.BadLocationException;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
 
 public class GiveListProgressOverlay {
 
     private JWindow window;
+    private Point mouseClickPoint;
     private final Logger logger = LoggerFactory.getLogger(GiveListProgressOverlay.class);
 
     private JLabel statusLabel;
@@ -69,6 +75,26 @@ public class GiveListProgressOverlay {
         });
     }
 
+    private void applyAcrylicEffect() {
+        try {
+            // Try to access Windows DWM API
+            Class<?> windowClass = Class.forName("java.awt.Window");
+            Field peerField = windowClass.getDeclaredField("peer");
+            peerField.setAccessible(true);
+
+            Object peer = peerField.get(this);
+            Class<?> peerClass = peer.getClass();
+
+            // Apply blur behind effect using reflection
+            Method setBlurBehindMethod = peerClass.getMethod("setBlurBehindEnabled", boolean.class);
+            setBlurBehindMethod.invoke(peer, true);
+
+        } catch (Exception ex) {
+            logger.error("Failed to apply acrylic effect: ", ex);
+        }
+    }
+
+
     private void initialize() {
 
         try {
@@ -78,8 +104,16 @@ public class GiveListProgressOverlay {
         }
 
         window = new JWindow();
-        window.setBackground(new Color(1.f, 1f, 1f, 0.5f));
+        window.setBackground(new Color(1.f, 1f, 1f, 0.85f));
         window.setAlwaysOnTop(true);
+
+        try {
+            applyAcrylicEffect();
+        } catch (Exception e) {
+            logger.error("An error occurred while applying blur: ", e);
+        }
+
+
 
         int WINDOW_WIDTH = 600;
         int WINDOW_HEIGHT = 150;
@@ -89,6 +123,7 @@ public class GiveListProgressOverlay {
         // Root panel with transparent background
         JPanel rootPanel = new JPanel(new GridBagLayout());
         rootPanel.setOpaque(false); // allow transparency
+        makeDraggable(rootPanel);
         window.add(rootPanel);
 
         // Center panel: auto height, full width
@@ -146,6 +181,7 @@ public class GiveListProgressOverlay {
 
     }
 
+
     public void setWindowVisible(boolean v) {
         window.setVisible(v);
     }
@@ -171,6 +207,27 @@ public class GiveListProgressOverlay {
     public void setScrollIndex(int index) {
         SwingUtilities.invokeLater(() -> {
             this.scrollToLine(index);
+        });
+    }
+
+    private void makeDraggable(JComponent component) {
+        component.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mousePressed(java.awt.event.MouseEvent e) {
+                // store mouse position relative to window
+                mouseClickPoint = e.getPoint();
+            }
+        });
+
+        component.addMouseMotionListener(new java.awt.event.MouseMotionAdapter() {
+            @Override
+            public void mouseDragged(java.awt.event.MouseEvent e) {
+                // calculate new window location
+                Point newLocation = window.getLocation();
+                newLocation.x += e.getX() - mouseClickPoint.x;
+                newLocation.y += e.getY() - mouseClickPoint.y;
+                window.setLocation(newLocation);
+            }
         });
     }
 }

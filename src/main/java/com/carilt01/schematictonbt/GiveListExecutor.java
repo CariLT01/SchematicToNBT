@@ -11,7 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 
-public class                                                 GiveListExecutor {
+public class GiveListExecutor {
     private final RobotTyper robotTyper;
     private final Logger logger = LoggerFactory.getLogger(GiveListExecutor.class);
 
