@@ -115,8 +115,10 @@ public class VolumesLayoutImageExporter {
         int progressTracker = 0;
         for (VolumeBlockEntry entry : volumes) {
             progressTracker++;
+            if (progressTracker % 64 == 0) {
+                callback.update((float) progressTracker / volumes.size(), "Coloring map...");
+            }
 
-            callback.update((float) progressTracker / volumes.size(), "Coloring map...");
 
             int[] colorRGB = colors.get(index);
             g.setColor(new Color(colorRGB[0], colorRGB[1], colorRGB[2]));

@@ -1,5 +1,6 @@
 package com.carilt01.schematictonbt;
 
+import com.carilt01.schematictonbt.userInterface.GiveListProgressOverlay;
 import com.carilt01.schematictonbt.userInterface.IntegerInput;
 import com.carilt01.schematictonbt.userInterface.LabeledOption;
 import com.carilt01.schematictonbt.userInterface.MainUI;
@@ -15,6 +16,7 @@ public class Application {
     private static final Logger logger = LoggerFactory.getLogger(Application.class);
     private final MainUI mainUI;
     private final SchematicToNBTConverter converter;
+    private final GiveListProgressOverlay overlay;
 
     public Application() {
 
@@ -33,6 +35,33 @@ public class Application {
                 SwingUtilities.invokeLater(() -> {
                     mainUI.showWarning(message);
                 });
+            }
+        };
+
+        overlay = new GiveListProgressOverlay();
+
+        GiveListExecutorCallbacks executorCallbacks = new GiveListExecutorCallbacks() {
+            @Override
+            public void setStatus(String text) {
+                overlay.setStatusLabelText(text);
+            }
+
+            @Override
+            public void setProgress(int progress) {
+                overlay.setProgressBarValue(progress);
+            }
+
+            @Override
+            public void setTextArea(String text) {
+                overlay.setListAreaText(text);
+            }
+            @Override
+            public void finished() {
+                overlay.setWindowVisible(false);
+            }
+            @Override
+            public void scrollToLine(int index) {
+                overlay.scrollToLine(index);
             }
         };
 
@@ -74,13 +103,14 @@ public class Application {
             }
             @Override
             public void executeGiveList(String filePath) {
+                overlay.setWindowVisible(true);
                 new Thread(() -> {
                     mainUI.setProgressBarVisible(true);
                     mainUI.setProgressTextVisible(true);
 
                     GiveListExecutor executor = new GiveListExecutor();
                     try {
-                        executor.executeGiveList(filePath, progressCallback);
+                        executor.executeGiveList(filePath, progressCallback, executorCallbacks);
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
@@ -96,6 +126,7 @@ public class Application {
 
         this.mainUI.setProgressBarVisible(false);
         this.mainUI.setProgressTextVisible(false);
+
 
         this.mainUI.showWindow();
     }

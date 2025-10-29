@@ -52,6 +52,9 @@ public class VolumeSplitter {
                 int zEnd;
 
                 // Reduce curXChunk/curZChunk until serialized size fits
+
+                long startTime = System.currentTimeMillis();
+
                 while (true) {
                     xEnd = Math.min(xStart + curXChunk, volume.getWidth());
                     zEnd = Math.min(zStart + curZChunk, volume.getLength());
