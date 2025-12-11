@@ -34,6 +34,8 @@ public class MainUI {
 
     public final LabeledOption defaultQualityOption = new LabeledOption("Default Quality", "Balanced Adaptive Splitter – Balances speed and quality");
     public final LabeledOption enhancedQualityOption = new LabeledOption("High Precision", "Precise Adaptive Splitter – Higher quality results but slower speed. Results may vary.");
+    public final LabeledOption binarySearchQualityOption = new LabeledOption("[Experimental] Binary Search", "Experimental Splitter - Faster speed than High Precision. Quality varies.");
+
     public LabeledComboBox qualityComboBox;
 
     private final Callback callbacks;
@@ -155,7 +157,8 @@ public class MainUI {
 
         LabeledOption[] options = {
                 defaultQualityOption,
-                enhancedQualityOption
+                enhancedQualityOption,
+                binarySearchQualityOption
         };
 
         qualityComboBox = new LabeledComboBox(options);

@@ -41,7 +41,7 @@ public class SchematicToNBTConverter {
         return structureVolume;
     }
 
-    public void convertFile(String filePath, boolean shouldSplit, int maxVolumeSize, ProgressCallback progressCallback, float quality) throws IOException {
+    public void convertFile(String filePath, boolean shouldSplit, int maxVolumeSize, ProgressCallback progressCallback, float quality, boolean useBinarySearch) throws IOException {
         File file = new File(filePath);
         Volume structureVolume = this.loadSchematicFile(file, progressCallback);
 
@@ -53,7 +53,7 @@ public class SchematicToNBTConverter {
 
 
 
-        List<VolumeCoords> outputCoordinates = this.volumeSplitter.splitVolume(structureVolume, progressCallback, maxVolumeSize, quality);
+        List<VolumeCoords> outputCoordinates = this.volumeSplitter.splitVolume(structureVolume, progressCallback, maxVolumeSize, quality, useBinarySearch);
 
         // Convert to Volume block
 

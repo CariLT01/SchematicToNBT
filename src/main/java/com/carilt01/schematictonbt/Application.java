@@ -81,12 +81,14 @@ public class Application {
                     quality = 2;
                 }
 
+                boolean isBinarySearch = selectedOption == mainUI.binarySearchQualityOption;
+
                 new Thread(() -> {
 
                     progressCallback.update(0, "Loading...");
 
                     try {
-                        converter.convertFile(filePath, true, maxVolumeSize * 1024, progressCallback, quality);
+                        converter.convertFile(filePath, true, maxVolumeSize * 1024, progressCallback, quality, isBinarySearch);
                     } catch (Exception e) {
                         logger.error("An error occurred while saving file: ", e);
                         mainUI.showError(e.getMessage());
