@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class SchemFileLoader {
+public class SchemFileLoader implements FileLoader {
 
     private static final Logger logger = LoggerFactory.getLogger(SchemFileLoader.class);
 
@@ -233,7 +233,7 @@ public class SchemFileLoader {
         return schemVolume;
     }
 
-    public Volume loadSchemToVolume(File file, ProgressCallback callback) throws IOException {
+    public Volume loadFileToVolume(File file, ProgressCallback callback) throws IOException {
 
         callback.update(-1, "Reading data...");
 

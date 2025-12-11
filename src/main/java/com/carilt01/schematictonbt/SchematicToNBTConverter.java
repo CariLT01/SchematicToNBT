@@ -1,5 +1,6 @@
 package com.carilt01.schematictonbt;
 
+import com.carilt01.schematictonbt.loaders.LitematicFileLoader;
 import com.carilt01.schematictonbt.loaders.SchemFileLoader;
 import com.carilt01.schematictonbt.loaders.SchematicFileLoader;
 
@@ -15,6 +16,7 @@ public class SchematicToNBTConverter {
     private final NBTExporter nbtExporter;
     private final VolumeSplitter volumeSplitter;
     private final VolumesLayoutImageExporter volumesLayoutImageExporter;
+    private final LitematicFileLoader litematicFileLoader;
 
     public SchematicToNBTConverter() {
         schematicFileLoader = new SchematicFileLoader();
@@ -22,6 +24,7 @@ public class SchematicToNBTConverter {
         schemFileLoader = new SchemFileLoader();
         volumeSplitter = new VolumeSplitter();
         volumesLayoutImageExporter = new VolumesLayoutImageExporter();
+        litematicFileLoader = new LitematicFileLoader();
     }
 
     public Volume loadSchematicFile(File file, ProgressCallback callback) throws IOException {
@@ -30,10 +33,13 @@ public class SchematicToNBTConverter {
         Volume structureVolume;
 
         if (filePath.endsWith(".schem")) {
-            structureVolume = schemFileLoader.loadSchemToVolume(file, callback);
+            structureVolume = schemFileLoader.loadFileToVolume(file, callback);
         } else if (filePath.endsWith(".schematic")) {
             callback.update(-1, "Loading schematic...");
-            structureVolume = schematicFileLoader.loadSchematicToVolume(file, callback);
+            structureVolume = schematicFileLoader.loadFileToVolume(file, callback);
+        } else if (filePath.endsWith(".litematic")) {
+            callback.update(-1, "Loading litematic...");
+            structureVolume = litematicFileLoader.loadFileToVolume(file, callback);
         } else {
             throw new IllegalArgumentException("Invalid file type");
         }

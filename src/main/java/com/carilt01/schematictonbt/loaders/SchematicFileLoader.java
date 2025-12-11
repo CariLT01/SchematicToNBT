@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.util.*;
 
-public class SchematicFileLoader {
+public class SchematicFileLoader implements FileLoader {
 
     private final Map<String, String> mappedBlockTypes = new HashMap<>();
     private static final Logger logger = LoggerFactory.getLogger(SchematicFileLoader.class);
@@ -47,7 +47,7 @@ public class SchematicFileLoader {
         }
     }
 
-    public Volume loadSchematicToVolume(File file, ProgressCallback callback) throws IOException {
+    public Volume loadFileToVolume(File file, ProgressCallback callback) throws IOException {
 
 
 

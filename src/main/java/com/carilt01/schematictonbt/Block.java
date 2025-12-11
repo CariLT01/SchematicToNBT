@@ -27,6 +27,10 @@ public final class Block {
         return new Block(blockName, blockProperties);
     }
 
+    public static Block create(String name, Map<String, String> properties) {
+        return new Block(name, properties);
+    }
+
     // --- Parse block properties from string like "stone[foo=bar]" ---
     private static Map<String, String> parseBlockProperties(String blockState) {
         Map<String, String> properties = new TreeMap<>();
