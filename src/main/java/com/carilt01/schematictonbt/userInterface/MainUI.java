@@ -3,13 +3,10 @@ package com.carilt01.schematictonbt.userInterface;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import com.carilt01.schematictonbt.Callback;
-import com.formdev.flatlaf.FlatDarkLaf;
 import com.formdev.flatlaf.FlatIntelliJLaf;
-import com.formdev.flatlaf.FlatLightLaf;
 import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.io.File;
@@ -24,17 +21,12 @@ public class MainUI {
     private JLabel chooseFileLabel;
     private JSpinner maximumKbPerFileSpinner;
 
-    private JLabel previousBlockLabel;
-    private JLabel currentBlockLabel;
-    private JLabel nextBlockLabel;
-    private JTextArea giveListExecutorArea;
-
     private File schematicSelectedFile;
     private File giveListSelectedFile;
 
     public final LabeledOption defaultQualityOption = new LabeledOption("Default Quality", "Balanced Adaptive Splitter – Balances speed and quality");
     public final LabeledOption enhancedQualityOption = new LabeledOption("High Precision", "Precise Adaptive Splitter – Higher quality results but slower speed. Results may vary.");
-    public final LabeledOption binarySearchQualityOption = new LabeledOption("[Experimental] Binary Search", "Experimental Splitter - Faster speed than High Precision. Quality varies.");
+    public final LabeledOption binarySearchQualityOption = new LabeledOption("[Experimental] Binary Search", "Experimental Splitter - Faster speed than High Precision. Quality varies, but higher than Default.");
 
     public LabeledComboBox qualityComboBox;
 
@@ -96,11 +88,6 @@ public class MainUI {
         JPanel schematicConverterTabPanel = new JPanel();
         schematicConverterTabPanel.setLayout(new BoxLayout(schematicConverterTabPanel, BoxLayout.Y_AXIS));
         JScrollPane schematicConverterTabPanelScrollPane = new JScrollPane(schematicConverterTabPanel);
-
-        //schematicConverterTabPanel.add(Box.createVerticalStrut(10)); // 10px vertical gap
-        //schematicConverterTabPanel.add(Box.createHorizontalStrut(10)); // 10px horizontal gap
-
-        //schematicConverterTabPanel.setLayout(new BoxLayout(schematicConverterTabPanel ,BoxLayout.Y_AXIS));
 
         tabbedPane.add("Convert schematic to NBT", schematicConverterTabPanelScrollPane);
         JScrollPane scrollPane = getJScrollPane();
@@ -233,7 +220,7 @@ public class MainUI {
 
         ///  --- Give list text area ---
 
-        giveListExecutorArea = new JTextArea();
+        JTextArea giveListExecutorArea = new JTextArea();
         giveListExecutorArea.setEditable(false);
         giveListExecutorArea.setMaximumSize(new Dimension(200, 200));
 
@@ -253,14 +240,14 @@ public class MainUI {
         gbc.gridy = 0;
 
 // Previous
-        previousBlockLabel = new JLabel("stone_block");
+        JLabel previousBlockLabel = new JLabel("stone_block");
         previousBlockLabel.setFont(new Font("Roboto", Font.PLAIN, 12));
         gbc.gridx = 0;
         gbc.anchor = GridBagConstraints.WEST;
         listSummary.add(previousBlockLabel, gbc);
 
 // Current
-        currentBlockLabel = new JLabel("grass_block");
+        JLabel currentBlockLabel = new JLabel("grass_block");
         currentBlockLabel.setFont(new Font("Roboto", Font.BOLD, 16));
         gbc.gridx = 1;
         gbc.weightx = 1.0;
@@ -269,7 +256,7 @@ public class MainUI {
         listSummary.add(currentBlockLabel, gbc);
 
 // Next
-        nextBlockLabel = new JLabel("dirt_block");
+        JLabel nextBlockLabel = new JLabel("dirt_block");
         nextBlockLabel.setFont(new Font("Roboto", Font.PLAIN, 12));
         gbc.gridx = 2;
         gbc.anchor = GridBagConstraints.EAST;
@@ -385,6 +372,8 @@ public class MainUI {
         return (Integer) this.maximumKbPerFileSpinner.getValue();
     }
 
+    /*
+    --- Code to uncomment once needed ---
     public void setPreviousBlockLabel(String text) {
         previousBlockLabel.setText(text);
     }
@@ -396,7 +385,7 @@ public class MainUI {
     }
     public void setGiveListExecutorArea(String text) {
         giveListExecutorArea.setText(text);
-    }
+    } */
 
     public LabeledComboBox getQualityComboBox() {
         return this.qualityComboBox;
