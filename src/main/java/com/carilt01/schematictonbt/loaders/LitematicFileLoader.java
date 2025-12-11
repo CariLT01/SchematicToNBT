@@ -98,43 +98,42 @@ public class LitematicFileLoader implements FileLoader {
         long[] data = blockArray.getValue();
 
         for (int idx = 0; idx < totalBlocks; idx++) {
-                //int localPaletteIndex = (int) ((datum >>> (j * bitsPerEntry)) & mask);
+            //int localPaletteIndex = (int) ((datum >>> (j * bitsPerEntry)) & mask);
             long startBit = (long) idx * bitsPerEntry;
             int startLongIndex = (int) (startBit / 64);
             int endLongIndex = (int) ((startBit + bitsPerEntry - 1) / 64);
             int offset = (int) (startBit % 64);
 
-                int y = idx % sizeY;
-                int z = (idx / sizeY) % sizeZ;
-                int x = idx / (sizeY * sizeZ);
+            int y = idx / (sizeZ * sizeX);
+            int remainder = idx % (sizeZ * sizeX);
+            int z = remainder / sizeX;
+            int x = remainder % sizeX;
 
-                int localPaletteIndex;
+            int localPaletteIndex;
 
-                if (startLongIndex == endLongIndex) {
-                    // The entry is contained entirely within one long
-                    localPaletteIndex = (int) ((data[startLongIndex] >>> offset) & mask);
-                } else {
-                    // The entry splits across two longs (Packed format)
-                    // Read the end of the first long
-                    long val1 = data[startLongIndex] >>> offset;
-                    // Read the start of the second long
-                    // (64 - offset) is how many bits we took from the first long
-                    long val2 = data[endLongIndex] << (64 - offset);
+            if (startLongIndex == endLongIndex) {
+                // The entry is contained entirely within one long
+                localPaletteIndex = (int) ((data[startLongIndex] >>> offset) & mask);
+            } else {
+                // The entry splits across two longs (Packed format)
+                // Read the end of the first long
+                long val1 = data[startLongIndex] >>> offset;
+                // Read the start of the second long
+                // (64 - offset) is how many bits we took from the first long
+                long val2 = data[endLongIndex] << (64 - offset);
 
-                    localPaletteIndex = (int) ((val1 | val2) & mask);
-                }
+                localPaletteIndex = (int) ((val1 | val2) & mask);
+            }
 
-                Block localBlock = paletteMap.get(localPaletteIndex);
+            Block localBlock = paletteMap.get(localPaletteIndex);
 
-                if (localBlock == null) {
-                    throw new IllegalArgumentException(String.format("Invalid palette index: %s", localPaletteIndex));
-                }
+            if (localBlock == null) {
+                throw new IllegalArgumentException(String.format("Invalid palette index: %s", localPaletteIndex));
+            }
 
-                structureVolume.setBlock(x, y, z, localBlock);
+            structureVolume.setBlock(x, y, z, localBlock);
 
-                //logger.info("Set block: {}", localBlock.getBlockName());
-
-                idx++;
+            //logger.info("Set block: {}", localBlock.getBlockName());
         }
 
         logger.info("Litematic loader ended ");
