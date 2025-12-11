@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class LitematicFileLoader implements FileLoader {
 
-    private static final Logger logger = LoggerFactory.getLogger(SchematicFileLoader.class);
+    private static final Logger logger = LoggerFactory.getLogger(LitematicFileLoader.class);
 
 
     public Volume loadFileToVolume(File file, ProgressCallback callback) throws IOException {
@@ -71,9 +71,7 @@ public class LitematicFileLoader implements FileLoader {
             Map<String, String> propertiesMap = new HashMap<>();
 
             if (properties != null) {
-                properties.forEach(propertyChildren -> {
-                    propertiesMap.put(propertyChildren.getKey(), propertyChildren.getValue().valueToString());
-                });
+                properties.forEach(propertyChildren -> propertiesMap.put(propertyChildren.getKey(), propertyChildren.getValue().valueToString()));
             }
 
             paletteMap.put(paletteIndex.get(), Block.create(blockName, propertiesMap));
@@ -86,21 +84,45 @@ public class LitematicFileLoader implements FileLoader {
 
         Volume structureVolume = new Volume(sizeX, sizeY, sizeZ);
 
+        //int bitsPerEntry = Math.max(2, 32 - Integer.numberOfLeadingZeros(paletteSize - 1));
+        //long mask = (1L << bitsPerEntry) - 1;
+
         int bitsPerEntry = Math.max(2, 32 - Integer.numberOfLeadingZeros(paletteSize - 1));
         long mask = (1L << bitsPerEntry) - 1;
 
         LongArrayTag blockArray = regionTag.getLongArrayTag("BlockStates");
 
         int blocksPerLong = 64 / bitsPerEntry;
-        int idx = 0;
+        final int totalBlocks = sizeX * sizeY * sizeZ;
 
-        for (long datum : blockArray.getValue()) {
-            for (int j = 0; j < blocksPerLong && idx < sizeX * sizeY * sizeZ; j++) {
-                int localPaletteIndex = (int) ((datum >>> (j * bitsPerEntry)) & mask);
+        long[] data = blockArray.getValue();
+
+        for (int idx = 0; idx < totalBlocks; idx++) {
+                //int localPaletteIndex = (int) ((datum >>> (j * bitsPerEntry)) & mask);
+            long startBit = (long) idx * bitsPerEntry;
+            int startLongIndex = (int) (startBit / 64);
+            int endLongIndex = (int) ((startBit + bitsPerEntry - 1) / 64);
+            int offset = (int) (startBit % 64);
 
                 int y = idx % sizeY;
                 int z = (idx / sizeY) % sizeZ;
                 int x = idx / (sizeY * sizeZ);
+
+                int localPaletteIndex;
+
+                if (startLongIndex == endLongIndex) {
+                    // The entry is contained entirely within one long
+                    localPaletteIndex = (int) ((data[startLongIndex] >>> offset) & mask);
+                } else {
+                    // The entry splits across two longs (Packed format)
+                    // Read the end of the first long
+                    long val1 = data[startLongIndex] >>> offset;
+                    // Read the start of the second long
+                    // (64 - offset) is how many bits we took from the first long
+                    long val2 = data[endLongIndex] << (64 - offset);
+
+                    localPaletteIndex = (int) ((val1 | val2) & mask);
+                }
 
                 Block localBlock = paletteMap.get(localPaletteIndex);
 
@@ -113,10 +135,9 @@ public class LitematicFileLoader implements FileLoader {
                 //logger.info("Set block: {}", localBlock.getBlockName());
 
                 idx++;
-            }
         }
 
-        logger.info("Litematic loader ended with index: {}", idx);
+        logger.info("Litematic loader ended ");
 
         return structureVolume;
     }
