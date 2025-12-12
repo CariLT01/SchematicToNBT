@@ -29,15 +29,17 @@ public class LitematicFileLoader implements FileLoader {
         IntTag versionTag = tag.getIntTag("MinecraftDataVersion");
 
         if (Config.DATA_VERSION < versionTag.asInt()) {
-            callback.showWarning("2 Warnings.\nWarning: File version higher than current target version. Expect missing blocks.\nWarning: Litematic loader only supports one region. It should work for most builds, but it may only export one region of the file in multi-region files.");
-        } else {
-            callback.showWarning("Warning: Litematic loader only supports one region. It should work for most builds, but it may only export one region of the file in multi-region files.");
+            callback.showWarning("Warning: File version higher than current target version. Expect missing blocks.");
         }
 
         CompoundTag regions = tag.getCompoundTag("Regions");
 
         if (regions == null) {
             throw new IllegalArgumentException("Cannot find Regions tag");
+        }
+
+        if (regions.entrySet().size() > 1) {
+            callback.showWarning("Warning: Multi-region file detected. Litematic currently only supports exporting one region. Only one region of the file will be exported. You may use the online tool if you need to export multiple regions from this file.");
         }
 
         Map.Entry<String, Tag<?>> firstEntry = regions.entrySet().iterator().next();
