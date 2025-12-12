@@ -29,7 +29,9 @@ public class LitematicFileLoader implements FileLoader {
         IntTag versionTag = tag.getIntTag("MinecraftDataVersion");
 
         if (Config.DATA_VERSION < versionTag.asInt()) {
-            callback.showWarning("Warning: File version higher than current target version. Expect missing blocks.");
+            callback.showWarning("2 Warnings.\nWarning: File version higher than current target version. Expect missing blocks.\nWarning: Litematic loader only supports one region. It should work for most builds, but it may only export one region of the file in multi-region files.");
+        } else {
+            callback.showWarning("Warning: Litematic loader only supports one region. It should work for most builds, but it may only export one region of the file in multi-region files.");
         }
 
         CompoundTag regions = tag.getCompoundTag("Regions");
@@ -84,15 +86,15 @@ public class LitematicFileLoader implements FileLoader {
 
         Volume structureVolume = new Volume(sizeX, sizeY, sizeZ);
 
-        //int bitsPerEntry = Math.max(2, 32 - Integer.numberOfLeadingZeros(paletteSize - 1));
-        //long mask = (1L << bitsPerEntry) - 1;
+        // : int bitsPerEntry = Math.max(2, 32 - Integer.numberOfLeadingZeros(paletteSize - 1));
+        // Old: long mask = (1L << bitsPerEntry) - 1;
 
         int bitsPerEntry = Math.max(2, 32 - Integer.numberOfLeadingZeros(paletteSize - 1));
         long mask = (1L << bitsPerEntry) - 1;
 
         LongArrayTag blockArray = regionTag.getLongArrayTag("BlockStates");
 
-        int blocksPerLong = 64 / bitsPerEntry;
+        // Old variable: int blocksPerLong = 64 / bitsPerEntry;
         final int totalBlocks = sizeX * sizeY * sizeZ;
 
         long[] data = blockArray.getValue();
