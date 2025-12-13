@@ -75,7 +75,18 @@ public class LitematicFileLoader implements FileLoader {
             Map<String, String> propertiesMap = new HashMap<>();
 
             if (properties != null) {
-                properties.forEach(propertyChildren -> propertiesMap.put(propertyChildren.getKey(), propertyChildren.getValue().valueToString()));
+
+                logger.info("Detected property");
+
+                properties.forEach(propertyChildren -> {
+
+                    StringTag stringTag = (StringTag) propertyChildren.getValue();
+
+                    propertiesMap.put(propertyChildren.getKey(), stringTag.getValue());
+                    logger.info("Value: {}", stringTag.getValue());
+                });
+            } else {
+                logger.info("No property tag found");
             }
 
             paletteMap.put(paletteIndex.get(), Block.create(blockName, propertiesMap));
