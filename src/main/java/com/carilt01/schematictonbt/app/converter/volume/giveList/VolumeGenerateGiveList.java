@@ -24,6 +24,7 @@ public class VolumeGenerateGiveList {
         for (Block block : volume) {
 
             if (block.getBlockName().startsWith("minecraft:air")) continue;
+            if (block.getBlockName().startsWith("minecraft:water")) continue;
 
             float giveCount = mappings.processBlockCount(block.getBlockName(), block.getProperties());
 
