@@ -1,5 +1,6 @@
 package com.carilt01.schematictonbt;
 
+import com.carilt01.schematictonbt.app.Application;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
