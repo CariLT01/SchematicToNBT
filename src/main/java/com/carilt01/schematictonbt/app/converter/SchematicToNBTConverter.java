@@ -33,6 +33,7 @@ public class SchematicToNBTConverter {
                 .addReplacementMapping("sign", "oak_sign")
                 .addReplacementMapping("walL_sign", "oak_sign")
                 .addReplacementMapping("tripwire", "tripwire_hook")
+                .addReplacementMapping("large_fern", "fern")
                 .addSuffixCountMapping("_door", -0.5f)
                 .addSuffixCountMapping("bed", -0.5f)
                 .build();
