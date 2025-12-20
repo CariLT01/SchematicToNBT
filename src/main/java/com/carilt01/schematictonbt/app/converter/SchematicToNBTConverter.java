@@ -29,7 +29,7 @@ public class SchematicToNBTConverter {
 
         schematicFileLoader = new SchematicFileLoader();
         GiveListMappingConfiguration mappings = new GiveListMappingConfiguration.Builder()
-                .addReplacementMapping("walL_torch", "torch")
+                .addReplacementMapping("wall_torch", "torch")
                 .addReplacementMapping("sign", "oak_sign")
                 .addReplacementMapping("walL_sign", "oak_sign")
                 .addReplacementMapping("tripwire", "tripwire_hook")
