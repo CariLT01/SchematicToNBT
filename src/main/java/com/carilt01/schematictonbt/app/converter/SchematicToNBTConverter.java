@@ -37,6 +37,7 @@ public class SchematicToNBTConverter {
                 .addReplacementMapping("large_fern", "fern")
                 .addReplacementMapping("potted_fern", "fern")
                 .addReplacementMapping("potted_poppy", "poppy")
+                .addReplacementMapping("redstone_wire", "redstone")
                 .addSuffixCountMapping("_door", -0.5f)
                 .addSuffixCountMapping("bed", -0.5f)
                 .build();
